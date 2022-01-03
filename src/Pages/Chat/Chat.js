@@ -8,27 +8,74 @@ const Chat = ()=>{
   const monacoRef = useRef(null);
   const socketRef = useRef(null);
   const search = useParams();
-  const [doc,setDoc] = useState(''); 
 
+  var decorations = {}
+  var users = {}
 
-  // useEffect(() => {
-  //   if (socketRef.current == null) return
+  function changeSeleciton(e) {
+    var selectionArray = []
+    if (e.selection.startColumn == e.selection.endColumn && e.selection.startLineNumber == e.selection.endLineNumber) { 
+        e.selection.endColumn++
+        selectionArray.push({
+            range: e.selection,
+            options: {
+              className: 'my-cursor',
+                hoverMessage: {
+                    value: e.user
+                }
+            }
+        })
 
-  //   const interval = setInterval(() => {
-  //     socketRef.current.emit("saveDoc", doc);
-  //   }, 200)
-
-  //   return () => {
-  //     clearInterval(interval)
-  //   }
-  // }, [doc])
-
+    } else {   
+        selectionArray.push({   
+            range: e.selection,
+            options: {
+              className: 'my-cursor',
+                hoverMessage: {
+                    value: e.user
+                }
+            }
+        })
+    }
+    for (let data of e.secondarySelections) {      
+        if (data.startColumn == data.endColumn && data.startLineNumber == data.endLineNumber) {        
+            selectionArray.push({
+                range: data,
+                options: {
+                  className: 'my-cursor',
+                    hoverMessage: {
+                        value: e.user
+                    }
+                }
+            })
+        } else
+            selectionArray.push({
+                range: data,
+                options: {
+                  className: 'my-cursor',
+                    hoverMessage: {
+                        value: e.user
+                    }
+                }
+            })
+    }
+    console.log(decorations[e.user]);
+    decorations[e.user] = monacoRef.current.deltaDecorations(decorations[e.user], selectionArray);
+}
   const  onMount = editor => {
     monacoRef.current = editor;
     socketRef.current = io('http://192.168.1.200:5000',{query:search});
-    socketRef.current.on('loadDoc',data=>{
+
+    socketRef.current.on('connected', function (data) { 
       console.log(data);
-      //editor.getModel().setValue(data.data);
+      users[data.user] = data.color;
+      decorations[data.user] = []
+    })
+
+    socketRef.current.on('loadDoc',data=>{
+      if(data){
+        editor.getModel().setValue(data?.data);
+      }
     });
     socketRef.current.on('newmsg', data => {
       monacoRef.current.executeEdits(null, [{
@@ -37,17 +84,35 @@ const Chat = ()=>{
         forceMoveMarkers: true
       }]);
     })
-    socketRef.current.on('giveData',(d)=>{
-      console.log("doc : "+doc)
-      socketRef.current.emit('sendData','vivek');
+    socketRef.current.on('giveData',(id)=>{
+      socketRef.current.emit('sendData',{id,'data':editor.getModel().getValue()});
+    })
+    socketRef.current.on('selection', function (data) {   
+      console.log(data); 
+      changeSeleciton(data)
+    })
+
+    socketRef.current.on('userdata', function (data) {     
+      for (var i of data) {
+          users[i.user] = i.color
+          decorations[i.user] = []
+      }
+    })
+
+    editor.onDidChangeCursorSelection(function (e) {   
+      socketRef.current.emit('selection', e);
     })
   }; 
-  useEffect(()=>{
-    console.log(doc);
-  },[doc]);
+ 
+  useEffect(() => {
+    window.addEventListener('beforeunload', (event) => {
+      event.preventDefault();
+      socketRef.current.emit("saveDoc", monacoRef.current.getModel().getValue());
+      socketRef.current.disconnect();
+    });
+  }, [])
 
   const onChange = (v,e) => {
-    setDoc(v);
     if(e.changes[0].forceMoveMarkers === true || e.isFlush) return;
     socketRef.current.emit('msg', e);
   }
