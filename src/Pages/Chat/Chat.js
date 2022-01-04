@@ -1,14 +1,13 @@
 import './Chat.scss';
 import io from "socket.io-client";
-import {useState,useEffect,useRef} from 'react';
+import {useEffect,useRef} from 'react';
 import {useParams} from 'react-router-dom';
 import Editor from "@monaco-editor/react";
 
 const Chat = ()=>{
   const monacoRef = useRef(null);
   const socketRef = useRef(null);
-  const search = useParams();
-
+  const room = useParams();
   var decorations = {}
   var users = {}
 
@@ -59,47 +58,55 @@ const Chat = ()=>{
                 }
             })
     }
-    console.log(decorations[e.user]);
+    console.log(decorations);
     decorations[e.user] = monacoRef.current.deltaDecorations(decorations[e.user], selectionArray);
 }
   const  onMount = editor => {
     monacoRef.current = editor;
-    socketRef.current = io('http://192.168.1.200:5000',{query:search});
+    socketRef.current = io('http://192.168.1.200:5000',{query:room});
 
-    socketRef.current.on('connected', function (data) { 
+    socketRef.current.on('connected',  (data) => { 
       console.log(data);
-      users[data.user] = data.color;
-      decorations[data.user] = []
+      users[data.id] = data.color;
+      decorations[data.id] = []
     })
 
-    socketRef.current.on('loadDoc',data=>{
-      if(data){
-        editor.getModel().setValue(data?.data);
+    socketRef.current.on('userdata', userData =>{
+      console.log(userData);
+      for (var i of userData) {
+        users[i.id] = i.color
+        decorations[i.id] = []
       }
     });
-    socketRef.current.on('newmsg', data => {
+
+    socketRef.current.on('loadDoc', modelValue =>{
+      modelValue && editor.getModel().setValue(modelValue?.data);
+    });
+
+
+    socketRef.current.on('trail', (d)=>{
+      console.log(d);
+    });
+
+    socketRef.current.on('clientRequestedData',(id)=>{
+      socketRef.current.emit('clientRequestedData',{id,'data':editor.getModel().getValue()});
+    })
+
+    socketRef.current.on('selection', (data) =>{   
+      changeSeleciton(data);
+    })
+
+
+    socketRef.current.on('textChange', data => {
       monacoRef.current.executeEdits(null, [{
         range: data.changes[0].range,
         text: data.changes[0].text,
         forceMoveMarkers: true
       }]);
     })
-    socketRef.current.on('giveData',(id)=>{
-      socketRef.current.emit('sendData',{id,'data':editor.getModel().getValue()});
-    })
-    socketRef.current.on('selection', function (data) {   
-      console.log(data); 
-      changeSeleciton(data)
-    })
 
-    socketRef.current.on('userdata', function (data) {     
-      for (var i of data) {
-          users[i.user] = i.color
-          decorations[i.user] = []
-      }
-    })
-
-    editor.onDidChangeCursorSelection(function (e) {   
+    editor.onDidChangeCursorSelection( (e) => {   
+      console.log(e);
       socketRef.current.emit('selection', e);
     })
   }; 
@@ -107,14 +114,14 @@ const Chat = ()=>{
   useEffect(() => {
     window.addEventListener('beforeunload', (event) => {
       event.preventDefault();
-      socketRef.current.emit("saveDoc", monacoRef.current.getModel().getValue());
+      socketRef.current.emit("clientLeft", socketRef.current.id,room.search,monacoRef.current.getModel().getValue());
       socketRef.current.disconnect();
     });
   }, [])
 
   const onChange = (v,e) => {
     if(e.changes[0].forceMoveMarkers === true || e.isFlush) return;
-    socketRef.current.emit('msg', e);
+    socketRef.current.emit('textChange', e);
   }
 
   return(
