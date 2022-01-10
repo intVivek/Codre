@@ -1,4 +1,13 @@
 .my-cursor {
-  background: black;
   width: 2px !important;
+  animation : blink 1.1s step-end infinite;
+}
+
+@keyframes blink {
+  from, to {
+    background: red;
+  }
+  50% {
+    background: transparent;
+  }
 }
