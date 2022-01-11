@@ -1,19 +1,22 @@
 import './Chat.scss';
 import io from "socket.io-client";
-import {useState,useEffect,useRef,useCallback} from 'react';
-import {useParams} from 'react-router-dom';
+import {useState,useEffect,useRef} from 'react';
+import {useParams,useLocation} from 'react-router-dom';
 import Editor from "@monaco-editor/react";
+
 
 const Chat = ()=>{
   const editorRef = useRef(null);
   const socketRef = useRef(null);
   const monacoRef = useRef(null);
+  let { search } = useLocation();
   const room = useParams();
   var contentWidgets = {}
   var decorations = {}
   var users = {}
-  
 
+  const query = new URLSearchParams(search);
+  
   const insertWidget = (e) => {
     console.log(e);
     contentWidgets[e.id] = {
@@ -25,92 +28,86 @@ const Chat = ()=>{
         getId: () => {
             return 'content.' + e.id
         },
-        getDomNode: () => {
+        getDomNode: function () {
             if (!this.domNode) {
                 this.domNode = document.createElement('div')
-                this.domNode.innerHTML = e.id
+                this.domNode.innerHTML = e.name
                 this.domNode.style.background = e.color
                 this.domNode.style.color = 'black'
-                this.domNode.style.opacity = 0.8
+                this.domNode.style.opacity = 1
+                this.domNode.style.fontSize = '10px'
                 this.domNode.style.width = 'max-content'
+                this.domNode.style.padding = '0 3px 0 3px'
+                this.domNode.style.borderRadius = "3px";
             }
             return this.domNode
         },
-        getPosition:  () => {
+        getPosition:  function() {
+          console.log(this.position);
             return {
                 position: this.position,
-                preference: [monacoRef.current.editor.ContentWidgetPositionPreference.BELOW,monacoRef.current.editor.ContentWidgetPositionPreference.ABOVE]
+                preference: [monacoRef.current.editor.ContentWidgetPositionPreference.ABOVE,monacoRef.current.editor.ContentWidgetPositionPreference.BELOW]
             }
         }
     }
 }
 
 
+const changeWidgetPosition =(e) => {
+  console.log(e);
+  console.log(contentWidgets);
+  contentWidgets[e.id].position.lineNumber = e.selection.endLineNumber
+  contentWidgets[e.id].position.column = e.selection.endColumn
+
+  editorRef.current.removeContentWidget(contentWidgets[e.id])
+  editorRef.current.addContentWidget(contentWidgets[e.id])
+}
+
+
   const changeSeleciton = (e) => {
-    var selectionArray = []
+    var selectionArray = [];
     if (e.selection.startColumn == e.selection.endColumn && e.selection.startLineNumber == e.selection.endLineNumber) { 
         e.selection.endColumn++
         selectionArray.push({
             range: e.selection,
             options: {
-              className: 'my-cursor',
-                hoverMessage: {
-                    value: e.user
-                }
+              className: `my-cursor user${e.id}` ,
             }
         })
     } else {   
         selectionArray.push({   
             range: e.selection,
             options: {
-              className: 'my-cursor',
-                hoverMessage: {
-                    value: e.user
-                }
+              className: `my-cursor user${e.id}` ,
             }
         })
     }
+
     for (let data of e.secondarySelections) {      
         if (data.startColumn == data.endColumn && data.startLineNumber == data.endLineNumber) {        
             selectionArray.push({
                 range: data,
                 options: {
-                  className: 'my-cursor',
-                    hoverMessage: {
-                        value: e.user
-                    }
+                  className: `my-cursor user${data.id}` ,
                 }
             })
         } else
             selectionArray.push({
                 range: data,
                 options: {
-                  className: 'my-cursor',
-                    hoverMessage: {
-                        value: e.user
-                    }
+                  className: `my-cursor user${data.id}` ,
                 }
             })
     }
     console.log(decorations);
-    decorations[e.user] = editorRef.current.deltaDecorations(decorations[e.user], selectionArray);
-}
-
-const changeWidgetPosition =(e) => {
-  console.log(e);
-  console.log(contentWidgets);
-  contentWidgets[e.user].position.lineNumber = e.selection.endLineNumber
-  contentWidgets[e.user].position.column = e.selection.endColumn
-
-  editorRef.current.removeContentWidget(contentWidgets[e.user])
-  editorRef.current.addContentWidget(contentWidgets[e.user])
-}
+    decorations[e.id] = editorRef.current.deltaDecorations(decorations[e.id], selectionArray);
+  }
 
   const  onMount = (editor,monaco) => {
     var cursor;
     editorRef.current = editor;
     monacoRef.current=monaco;
-    socketRef.current = io('http://192.168.1.200:5000',{query:room});
+    socketRef.current = io('http://192.168.1.200:5000',{query:{'room':room.search,'name':query.get('user')}});
 
     socketRef.current.on('connected',  (data) => { 
       console.log('My Cursor', cursor);
@@ -119,14 +116,21 @@ const changeWidgetPosition =(e) => {
       console.log(data);
       users[data.id] = data.color;
       decorations[data.id] = []
+      const sheet = new CSSStyleSheet();
+      sheet.replaceSync(`.user${data.id} {background: ${data.color}}`);
+      document.adoptedStyleSheets = [sheet];
     })
 
     socketRef.current.on('userdata', userData =>{
       console.log(userData);
       for (var i of userData) {
+        console.log(i);
         users[i.id] = i.color
         insertWidget(i)
         decorations[i.id] = []
+        const sheet = new CSSStyleSheet();
+        sheet.replaceSync(`.user${i.id} {background: ${i.color}}`);
+        document.adoptedStyleSheets = [...document.adoptedStyleSheets,sheet];        
       }
     });
 
@@ -145,7 +149,9 @@ const changeWidgetPosition =(e) => {
     })
 
     socketRef.current.on('exit', (data) =>{   
+      console.log(data);
       editorRef.current.deltaDecorations(decorations[data], []);
+      editorRef.current.removeContentWidget(contentWidgets[data]);
       delete decorations[data]
     })
 
@@ -184,6 +190,7 @@ const changeWidgetPosition =(e) => {
           height="90vh"
           width="100vw"
           defaultLanguage="javascript"
+          theme= 'vs-dark'
           onMount={onMount}
           onChange={onChange}
         />
