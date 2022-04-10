@@ -1,24 +1,18 @@
 import './Chat.scss';
 import io from "socket.io-client";
 import {useState,useEffect,useRef} from 'react';
-import {useParams,useLocation} from 'react-router-dom';
 import Editor from "@monaco-editor/react";
 
 
-const Chat = ()=>{
+const Chat = (props)=>{
   const editorRef = useRef(null);
   const socketRef = useRef(null);
   const monacoRef = useRef(null);
-  let { search } = useLocation();
-  const room = useParams();
   var contentWidgets = {}
   var decorations = {}
   var users = {}
-
-  const query = new URLSearchParams(search);
   
   const insertWidget = (e) => {
-    console.log(e);
     contentWidgets[e.id] = {
         domNode: null,
         position: {
@@ -43,7 +37,6 @@ const Chat = ()=>{
             return this.domNode
         },
         getPosition:  function() {
-          console.log(this.position);
             return {
                 position: this.position,
                 preference: [monacoRef.current.editor.ContentWidgetPositionPreference.ABOVE,monacoRef.current.editor.ContentWidgetPositionPreference.BELOW]
@@ -54,8 +47,6 @@ const Chat = ()=>{
 
 
 const changeWidgetPosition =(e) => {
-  console.log(e);
-  console.log(contentWidgets);
   contentWidgets[e.id].position.lineNumber = e.selection.endLineNumber
   contentWidgets[e.id].position.column = e.selection.endColumn
 
@@ -65,6 +56,7 @@ const changeWidgetPosition =(e) => {
 
 
   const changeSeleciton = (e) => {
+    console.log(e);
     var selectionArray = [];
     if (e.selection.startColumn == e.selection.endColumn && e.selection.startLineNumber == e.selection.endLineNumber) { 
         e.selection.endColumn++
@@ -99,7 +91,6 @@ const changeWidgetPosition =(e) => {
                 }
             })
     }
-    console.log(decorations);
     decorations[e.id] = editorRef.current.deltaDecorations(decorations[e.id], selectionArray);
   }
 
@@ -107,13 +98,19 @@ const changeWidgetPosition =(e) => {
     var cursor;
     editorRef.current = editor;
     monacoRef.current=monaco;
-    socketRef.current = io('http://192.168.1.200:5000',{query:{'room':room.search,'name':query.get('user')}});
+    socketRef.current = io('http://localhost:5000',{
+      query: {'room': props.room},
+      reconnect: true,
+      reconnectionDelay: 500,
+      reconnectionDelayMax: 10000,
+      secure: true,
+      withCredentials: true
+    });
+
 
     socketRef.current.on('connected',  (data) => { 
-      console.log('My Cursor', cursor);
       socketRef.current.emit('selection', cursor);
       insertWidget(data);
-      console.log(data);
       users[data.id] = data.color;
       decorations[data.id] = []
       const sheet = new CSSStyleSheet();
@@ -122,9 +119,7 @@ const changeWidgetPosition =(e) => {
     })
 
     socketRef.current.on('userdata', userData =>{
-      console.log(userData);
       for (var i of userData) {
-        console.log(i);
         users[i.id] = i.color
         insertWidget(i)
         decorations[i.id] = []
@@ -143,13 +138,11 @@ const changeWidgetPosition =(e) => {
     })
 
     socketRef.current.on('selection', (data) =>{   
-      console.log(data);
       changeSeleciton(data);
       changeWidgetPosition(data);
     })
 
     socketRef.current.on('exit', (data) =>{   
-      console.log(data);
       editorRef.current.deltaDecorations(decorations[data], []);
       editorRef.current.removeContentWidget(contentWidgets[data]);
       delete decorations[data]
@@ -163,7 +156,7 @@ const changeWidgetPosition =(e) => {
       }]);
     })
 
-    editor.onDidChangeCursorSelection( (e) => {
+    editor.onDidChangeCursorSelection( e => {
       cursor = e;
       socketRef.current.emit('selection', e);
     })
@@ -173,7 +166,7 @@ const changeWidgetPosition =(e) => {
   useEffect(() => {
     window.addEventListener('beforeunload', (event) => {
       event.preventDefault();
-      socketRef.current.emit("clientLeft", socketRef.current.id,room.search,editorRef.current.getModel().getValue());
+      socketRef.current.emit("clientLeft", socketRef.current.id,"vivek",editorRef.current.getModel().getValue());
       socketRef.current.disconnect();
     });
   }, [])
