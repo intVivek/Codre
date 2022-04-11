@@ -2,38 +2,36 @@ import './Chat.scss';
 import io from "socket.io-client";
 import {useState,useEffect,useRef} from 'react';
 import Editor from "@monaco-editor/react";
+import {createWidget} from '../../Utils/createWidget.js';
+import {useParams} from 'react-router-dom';
 
 
 const Chat = (props)=>{
+  const userData  = useRef(null);
   const editorRef = useRef(null);
   const socketRef = useRef(null);
   const monacoRef = useRef(null);
   var contentWidgets = {}
   var decorations = {}
   var users = {}
+  const {room} = useParams();
   
   const insertWidget = (e) => {
-    contentWidgets[e.id] = {
+    console.log(e);
+    contentWidgets[e.socketId] = {
         domNode: null,
         position: {
             lineNumber: 0,
             column: 0
         },
         getId: () => {
-            return 'content.' + e.id
+            return 'content.' + e.socketId
         },
         getDomNode: function () {
             if (!this.domNode) {
-                this.domNode = document.createElement('div')
-                this.domNode.innerHTML = e.name
-                this.domNode.style.background = e.color
-                this.domNode.style.color = 'black'
-                this.domNode.style.opacity = 1
-                this.domNode.style.fontSize = '10px'
-                this.domNode.style.width = 'max-content'
-                this.domNode.style.padding = '0 3px 0 3px'
-                this.domNode.style.borderRadius = "3px";
+              this.domNode = createWidget(e);
             }
+            console.log(this.domNode)
             return this.domNode
         },
         getPosition:  function() {
@@ -47,11 +45,12 @@ const Chat = (props)=>{
 
 
 const changeWidgetPosition =(e) => {
-  contentWidgets[e.id].position.lineNumber = e.selection.endLineNumber
-  contentWidgets[e.id].position.column = e.selection.endColumn
+  console.log(e)
+  contentWidgets[e.socketId].position.lineNumber = e.selection.endLineNumber
+  contentWidgets[e.socketId].position.column = e.selection.endColumn
 
-  editorRef.current.removeContentWidget(contentWidgets[e.id])
-  editorRef.current.addContentWidget(contentWidgets[e.id])
+  editorRef.current.removeContentWidget(contentWidgets[e.socketId])
+  editorRef.current.addContentWidget(contentWidgets[e.socketId])
 }
 
 
@@ -63,14 +62,14 @@ const changeWidgetPosition =(e) => {
         selectionArray.push({
             range: e.selection,
             options: {
-              className: `my-cursor user${e.id}` ,
+              className: `my-cursor user${e.socketId}` ,
             }
         })
     } else {   
         selectionArray.push({   
             range: e.selection,
             options: {
-              className: `my-cursor user${e.id}` ,
+              className: `my-cursor user${e.socketId}` ,
             }
         })
     }
@@ -80,18 +79,19 @@ const changeWidgetPosition =(e) => {
             selectionArray.push({
                 range: data,
                 options: {
-                  className: `my-cursor user${data.id}` ,
+                  className: `my-cursor user${data.socketId}` ,
                 }
             })
         } else
             selectionArray.push({
                 range: data,
                 options: {
-                  className: `my-cursor user${data.id}` ,
+                  className: `my-cursor user${data.socketId}` ,
                 }
             })
     }
-    decorations[e.id] = editorRef.current.deltaDecorations(decorations[e.id], selectionArray);
+    
+    decorations[e.socketId] = editorRef.current.deltaDecorations(decorations[e.socketId], selectionArray);
   }
 
   const  onMount = (editor,monaco) => {
@@ -99,7 +99,7 @@ const changeWidgetPosition =(e) => {
     editorRef.current = editor;
     monacoRef.current=monaco;
     socketRef.current = io('http://localhost:5000',{
-      query: {'room': props.room},
+      query: {'room': room},
       reconnect: true,
       reconnectionDelay: 500,
       reconnectionDelayMax: 10000,
@@ -107,29 +107,36 @@ const changeWidgetPosition =(e) => {
       withCredentials: true
     });
 
+    socketRef.current.on('personalData',  (data) => { 
+      console.log(data);
+      userData.current = data;
+    })
 
     socketRef.current.on('connected',  (data) => { 
+      console.log(data);
       socketRef.current.emit('selection', cursor);
       insertWidget(data);
-      users[data.id] = data.color;
-      decorations[data.id] = []
+      users[data.socketId] = data.color;
+      decorations[data.socketId] = []
       const sheet = new CSSStyleSheet();
-      sheet.replaceSync(`.user${data.id} {background: ${data.color}}`);
+      sheet.replaceSync(`.user${data.socketId} {background: ${data.color}}`);
       document.adoptedStyleSheets = [sheet];
     })
 
     socketRef.current.on('userdata', userData =>{
       for (var i of userData) {
-        users[i.id] = i.color
+        console.log(i);
+        users[i.socketId] = i.color
         insertWidget(i)
-        decorations[i.id] = []
+        decorations[i.socketId] = []
         const sheet = new CSSStyleSheet();
-        sheet.replaceSync(`.user${i.id} {background: ${i.color}}`);
+        sheet.replaceSync(`.user${i.socketId} {background: ${i.color}}`);
         document.adoptedStyleSheets = [...document.adoptedStyleSheets,sheet];        
       }
     });
 
     socketRef.current.on('loadDoc', modelValue =>{
+      console.log(modelValue);
       modelValue && editor.getModel().setValue(modelValue?.data);
     });
 
@@ -137,7 +144,8 @@ const changeWidgetPosition =(e) => {
       socketRef.current.emit('clientRequestedData',{id,'data':editor.getModel().getValue()});
     })
 
-    socketRef.current.on('selection', (data) =>{   
+    socketRef.current.on('selection', (data) =>{  
+      console.log(data); 
       changeSeleciton(data);
       changeWidgetPosition(data);
     })
@@ -166,14 +174,15 @@ const changeWidgetPosition =(e) => {
   useEffect(() => {
     window.addEventListener('beforeunload', (event) => {
       event.preventDefault();
-      socketRef.current.emit("clientLeft", socketRef.current.id,"vivek",editorRef.current.getModel().getValue());
+      socketRef.current.emit("clientLeft", userData.current.socketId,userData.current.room,editorRef.current.getModel().getValue());
       socketRef.current.disconnect();
     });
-  }, [])
+  }, [userData.current])
 
   const onChange = (v,e) => {
     if(e.changes[0].forceMoveMarkers === true || e.isFlush) return;
     socketRef.current.emit('textChange', e);
+    console.log(userData.current);
   }
 
   return(

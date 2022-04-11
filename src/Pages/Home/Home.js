@@ -9,7 +9,6 @@ import { toast } from 'react-toastify';
 
 
 const Home = (props)=>{
-  const [data,setData] = useState({});
   const [room,setRoom] = useState("");
   const navigate = useNavigate();
 
@@ -18,10 +17,10 @@ const Home = (props)=>{
     .then(res => {
       if(res?.status){
         console.log(res)
-        res && setData(res.user);
+        res && props.setUserData(res.user);
       }
       else{
-        navigate('/login');
+        navigate('/');
       }
     })
     .catch(err => {
@@ -29,17 +28,12 @@ const Home = (props)=>{
     })
   },[]);
 
-  useEffect(()=>{
-    console.log();
-  },[data]);
-
   const joinHandler = ()=>{
     checkRoom({room})
     .then(res => {
       if(res.status===1){
         console.log(res)
-        props.setRoom(room);
-        navigate('/chat');
+        navigate(`/chat/${room}`);
       }
       else{
         toast.error("Room doesn't exist");
@@ -49,13 +43,13 @@ const Home = (props)=>{
 
   return(
     <div className='homePage'>
-      <NavBar img={data.photos?data.photos[0].value:""}/>
+      <NavBar img={props.userData.photos?props.userData.photos[0].value:""}/>
       <div className='body'>
         <input className='roomJoinInput' onChange={(e)=>{setRoom(e.target.value)}}></input>
         <div class="joinBtn" onClick={joinHandler}>
           <span>Join Room</span>
         </div>
-        <Button color="primary" onClick={()=>{navigate('/chat')}}>Create</Button>
+        <Button color="primary" onClick={()=>{navigate('/chat/createroom')}}>Create</Button>
       </div>
 
     </div>
