@@ -3,10 +3,10 @@ import io from "socket.io-client";
 import {useState,useEffect,useRef} from 'react';
 import Editor from "@monaco-editor/react";
 import {createWidget} from '../../Utils/createWidget.js';
-import {useParams} from 'react-router-dom';
+import {useParams,useNavigate} from 'react-router-dom';
 
 
-const Chat = (props)=>{
+const Chat = ()=>{
   const userData  = useRef(null);
   const editorRef = useRef(null);
   const socketRef = useRef(null);
@@ -14,16 +14,18 @@ const Chat = (props)=>{
   var contentWidgets = {}
   var decorations = {}
   var users = {}
+
+  const navigate = useNavigate();
   const {room} = useParams();
-  
+
   const insertWidget = (e) => {
-    console.log(e);
     contentWidgets[e.socketId] = {
         domNode: null,
         position: {
             lineNumber: 0,
             column: 0
         },
+        allowEditorOverflow: true,
         getId: () => {
             return 'content.' + e.socketId
         },
@@ -31,26 +33,26 @@ const Chat = (props)=>{
             if (!this.domNode) {
               this.domNode = createWidget(e);
             }
-            console.log(this.domNode)
             return this.domNode
         },
         getPosition:  function() {
             return {
                 position: this.position,
-                preference: [monacoRef.current.editor.ContentWidgetPositionPreference.ABOVE,monacoRef.current.editor.ContentWidgetPositionPreference.BELOW]
+                preference: [monacoRef.current.editor.ContentWidgetPositionPreference.ABOVE]
             }
         }
     }
 }
 
 
-const changeWidgetPosition =(e) => {
-  console.log(e)
-  contentWidgets[e.socketId].position.lineNumber = e.selection.endLineNumber
-  contentWidgets[e.socketId].position.column = e.selection.endColumn
+const changeWidgetPosition =(cursor) => {
+  editorRef.current.removeContentWidget(contentWidgets[cursor.socketId])
+  contentWidgets[cursor.socketId].position.lineNumber = cursor.selection.endLineNumber
+  contentWidgets[cursor.socketId].position.column = cursor.selection.endColumn
+  editorRef.current.addContentWidget(contentWidgets[cursor.socketId])
+  // cursor.secondarySelections.map((element)={
 
-  editorRef.current.removeContentWidget(contentWidgets[e.socketId])
-  editorRef.current.addContentWidget(contentWidgets[e.socketId])
+  // })
 }
 
 
@@ -74,24 +76,25 @@ const changeWidgetPosition =(e) => {
         })
     }
 
-    for (let data of e.secondarySelections) {      
+    for (let data of e.secondarySelections) { 
+      console.log(data);
         if (data.startColumn == data.endColumn && data.startLineNumber == data.endLineNumber) {        
             selectionArray.push({
                 range: data,
                 options: {
-                  className: `my-cursor user${data.socketId}` ,
+                  className: `my-cursor user${e.socketId}` ,
                 }
             })
         } else
             selectionArray.push({
                 range: data,
                 options: {
-                  className: `my-cursor user${data.socketId}` ,
+                  className: `my-cursor user${e.socketId}` ,
                 }
             })
     }
-    
     decorations[e.socketId] = editorRef.current.deltaDecorations(decorations[e.socketId], selectionArray);
+    console.log(decorations);
   }
 
   const  onMount = (editor,monaco) => {
@@ -107,8 +110,11 @@ const changeWidgetPosition =(e) => {
       withCredentials: true
     });
 
+    socketRef.current.on('failed',()=>{
+      navigate("/home");
+    });
+
     socketRef.current.on('personalData',  (data) => { 
-      console.log(data);
       userData.current = data;
     })
 
@@ -119,8 +125,9 @@ const changeWidgetPosition =(e) => {
       users[data.socketId] = data.color;
       decorations[data.socketId] = []
       const sheet = new CSSStyleSheet();
-      sheet.replaceSync(`.user${data.socketId} {background: ${data.color}}`);
+      sheet.replaceSync(`.user${data.socketId} {background: 'white'}`);
       document.adoptedStyleSheets = [sheet];
+      console.log(document.querySelector(`.my-cursor`));
     })
 
     socketRef.current.on('userdata', userData =>{
@@ -130,13 +137,13 @@ const changeWidgetPosition =(e) => {
         insertWidget(i)
         decorations[i.socketId] = []
         const sheet = new CSSStyleSheet();
-        sheet.replaceSync(`.user${i.socketId} {background: ${i.color}}`);
-        document.adoptedStyleSheets = [...document.adoptedStyleSheets,sheet];        
+        sheet.replaceSync(`.user${i.socketId} {background: 'white'}`);
+        document.adoptedStyleSheets = [...document.adoptedStyleSheets,sheet];
+        console.log(document.querySelector(`.my-cursor`));        
       }
     });
 
     socketRef.current.on('loadDoc', modelValue =>{
-      console.log(modelValue);
       modelValue && editor.getModel().setValue(modelValue?.data);
     });
 
@@ -182,7 +189,6 @@ const changeWidgetPosition =(e) => {
   const onChange = (v,e) => {
     if(e.changes[0].forceMoveMarkers === true || e.isFlush) return;
     socketRef.current.emit('textChange', e);
-    console.log(userData.current);
   }
 
   return(

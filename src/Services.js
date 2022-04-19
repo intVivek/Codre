@@ -10,8 +10,9 @@ export function fetchHome() {
     return callPost(baseUrl + '/home', {});
 }
 
-export function checkRoom(body) {
-    return callPost(baseUrl + '/room', body);
+export function createRoom(body) {
+    console.log(body);
+    return callPost(baseUrl + '/createRoom', body);
 }
 
 const callGet = (url) => {

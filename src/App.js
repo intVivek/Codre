@@ -7,14 +7,13 @@ import 'react-toastify/dist/ReactToastify.css';
 import {ToastContainer} from 'react-toastify';
 
 function App() {
-	const [userData,setUserData] = useState({});
   return (
 		<>
 			<BrowserRouter>
 					<Routes>
 						<Route exact path="/" element={<Login />}/>
-						<Route exact path="/chat/:room" element={<Chat userData={userData} />}/>
-						<Route exact path="/home" element={<Home userData={userData} setUserData={setUserData}/>}/>
+						<Route exact path="/chat/:room" element={<Chat />}/>
+						<Route exact path="/home" element={<Home />}/>
 						<Route path="*" element={<Navigate to="/home"/>} />
 					</Routes>
 			</BrowserRouter>
