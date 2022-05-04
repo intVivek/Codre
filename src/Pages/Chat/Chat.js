@@ -50,52 +50,49 @@ const changeWidgetPosition =(cursor) => {
   contentWidgets[cursor.socketId].position.lineNumber = cursor.selection.endLineNumber
   contentWidgets[cursor.socketId].position.column = cursor.selection.endColumn
   editorRef.current.addContentWidget(contentWidgets[cursor.socketId])
-  // cursor.secondarySelections.map((element)={
-
-  // })
 }
 
 
-  const changeSeleciton = (e) => {
-    console.log(e);
-    var selectionArray = [];
-    if (e.selection.startColumn == e.selection.endColumn && e.selection.startLineNumber == e.selection.endLineNumber) { 
-        e.selection.endColumn++
-        selectionArray.push({
-            range: e.selection,
-            options: {
-              className: `my-cursor user${e.socketId}` ,
-            }
-        })
-    } else {   
-        selectionArray.push({   
-            range: e.selection,
-            options: {
-              className: `my-cursor user${e.socketId}` ,
-            }
-        })
-    }
+  // const changeSeleciton = (e) => {
+  //   console.log(e);
+  //   var selectionArray = [];
+  //   if (e.selection.startColumn == e.selection.endColumn && e.selection.startLineNumber == e.selection.endLineNumber) { 
+  //       e.selection.endColumn++
+  //       selectionArray.push({
+  //           range: e.selection,
+  //           options: {
+  //             className: `my-cursor user${e.socketId}` ,
+  //           }
+  //       })
+  //   } else {   
+  //       selectionArray.push({   
+  //           range: e.selection,
+  //           options: {
+  //             className: `my-cursor user${e.socketId}` ,
+  //           }
+  //       })
+  //   }
 
-    for (let data of e.secondarySelections) { 
-      console.log(data);
-        if (data.startColumn == data.endColumn && data.startLineNumber == data.endLineNumber) {        
-            selectionArray.push({
-                range: data,
-                options: {
-                  className: `my-cursor user${e.socketId}` ,
-                }
-            })
-        } else
-            selectionArray.push({
-                range: data,
-                options: {
-                  className: `my-cursor user${e.socketId}` ,
-                }
-            })
-    }
-    decorations[e.socketId] = editorRef.current.deltaDecorations(decorations[e.socketId], selectionArray);
-    console.log(decorations);
-  }
+  //   for (let data of e.secondarySelections) { 
+  //     console.log(data);
+  //       if (data.startColumn == data.endColumn && data.startLineNumber == data.endLineNumber) {        
+  //           selectionArray.push({
+  //               range: data,
+  //               options: {
+  //                 className: `my-cursor user${e.socketId}` ,
+  //               }
+  //           })
+  //       } else
+  //           selectionArray.push({
+  //               range: data,
+  //               options: {
+  //                 className: `my-cursor user${e.socketId}` ,
+  //               }
+  //           })
+  //   }
+  //   decorations[e.socketId] = editorRef.current.deltaDecorations(decorations[e.socketId], selectionArray);
+  //   console.log(decorations);
+  // }
 
   const  onMount = (editor,monaco) => {
     var cursor;
@@ -119,27 +116,21 @@ const changeWidgetPosition =(cursor) => {
     })
 
     socketRef.current.on('connected',  (data) => { 
-      console.log(data);
       socketRef.current.emit('selection', cursor);
       insertWidget(data);
       users[data.socketId] = data.color;
-      decorations[data.socketId] = []
-      const sheet = new CSSStyleSheet();
-      sheet.replaceSync(`.user${data.socketId} {background: 'white'}`);
-      document.adoptedStyleSheets = [sheet];
-      console.log(document.querySelector(`.my-cursor`));
+      // const sheet = new CSSStyleSheet();
+      // sheet.replaceSync(`.user${data.socketId} {background: 'white'}`);
+      // document.adoptedStyleSheets = [sheet];
     })
 
     socketRef.current.on('userdata', userData =>{
       for (var i of userData) {
-        console.log(i);
         users[i.socketId] = i.color
         insertWidget(i)
-        decorations[i.socketId] = []
-        const sheet = new CSSStyleSheet();
-        sheet.replaceSync(`.user${i.socketId} {background: 'white'}`);
-        document.adoptedStyleSheets = [...document.adoptedStyleSheets,sheet];
-        console.log(document.querySelector(`.my-cursor`));        
+        // const sheet = new CSSStyleSheet();
+        // sheet.replaceSync(`.user${i.socketId} {background: 'white'}`);
+        // document.adoptedStyleSheets = [...document.adoptedStyleSheets,sheet];
       }
     });
 
@@ -153,7 +144,7 @@ const changeWidgetPosition =(cursor) => {
 
     socketRef.current.on('selection', (data) =>{  
       console.log(data); 
-      changeSeleciton(data);
+      // changeSeleciton(data);
       changeWidgetPosition(data);
     })
 

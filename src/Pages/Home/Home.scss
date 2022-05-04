@@ -7,50 +7,166 @@
   >.body{
     display: flex;
     flex-grow: 1;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
 
-    >.image{
-      width: 400px;
+    >.createRoom{
+      width: 100%; height: 90px;
+      margin-top: 40px;
+      display: flex;
+      align-items: center;
+      box-sizing: border-box;
+      flex-direction: row;
+      padding-left: min(100px, 5%);
+      user-select: none;
 
-      >img{
-        width: 100%;
-        height: auto;
+      >.createBtn{
+        width: 120px; height: 48px;
+        background: linear-gradient(-45deg,  #f35f25, #ff4800);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        border-radius: 4px;
+        box-shadow: none;
+        border: none;
+        transition: 0.15s;
+        margin-right: 40px;
+        font-size: 1rem;
+        user-select: none;
+
+        >p{
+          margin-right: 8px;
+        }
+
+        >.addIcon{
+          width: 18px; height: 18px;
+          fill: white;
+          transform: rotate(45deg);
+        }
+
+        &:hover{
+          box-shadow: 0px 0px 14px 0px #f54500e8;
+          transition: 0.15s;
+          cursor: pointer;
+        }
+
+        &:active{
+          background-color: #f15f25;
+          transition: 0.15s;
+        }
+
+        >.addIconSpin{
+          animation: spin 2s cubic-bezier(0.35, 0.28, 0.45, 0.88);
+        }
+
+        @keyframes spin{
+          from{
+            transform: rotate(45deg);
+          }
+          to{
+            transform: rotate(1755deg);
+          }
+        }
       }
-    }
 
-    >*{
-      margin: 5px;
-   }
+      >.joinInput{
+        width: 350px; height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
 
-    >.space{
-      width: 10px;
+        >.inputField{
+          width: calc(100% - 2px); height: calc(100% - 2px);
+          color: rgb(230, 230, 230);
+          border-radius: 4px;
+          box-shadow: 0 0 0 1px white;
+          background-color: #222222;
+          border: none;
+          transition: 0.15s;
+          display: flex;
+          align-items: center;
+          box-sizing: border-box;
+          justify-content: space-between;
+          background-image: url(https://img.icons8.com/ios-glyphs/30/ffffff/keyboard.png);
+          background-repeat: no-repeat;
+          background-position: left;
+          background-position-x: 10px;
+          padding-left: 50px;
+          font-size: 1rem;
+          letter-spacing: .00625em;
+          user-select: none;
+          outline: none !important;
+
+          &:hover{
+            box-shadow: 0 0 0 1px #e6571f;
+            border: none;
+            background-image: url(https://img.icons8.com/ios-glyphs/30/999999/keyboard.png);
+            transition: 0.15s;
+            cursor: pointer;
+          }
+
+          &:focus-visible{
+            border: none;
+            box-shadow: 0 0 0 1px #7da88800;
+            // width: calc(100% - 2px); height: calc(100% - 2px);
+            background-image: url(https://img.icons8.com/ios-glyphs/30/f54500/keyboard.png);
+            cursor: pointer;
+          }
+        }
+      }
+
+      >.joinBtn{
+        width: 60px; height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #e6571f;
+        border: none;
+        user-select: none;
+        margin-left: 8px;
+        border-radius: 4px;
+
+        &:hover{
+          transition: 0.15s;
+          cursor: pointer;
+          background-color: #f5450015;
+        }
+      }
     }
   }
 }
 
-.roomJoinInput{
-  width: 250px; height: 30px;
-  background-color: #3b3b3b;
-  border: 0px ;
-  border-radius: 12px;
-  box-shadow: inset 0px 0px 8px 2px #3d3c3c;
-  color: #a1a1a1;
+.blur{
+  transition: 1s;
+  filter: blur(2px);
+}
 
-  &:focus{
-    outline: none;
-    box-shadow: 0px 0px 8px 2px gradient(21deg, #10abff, #1beabd);
-}
-}
+
 
 .css-1946jlj-MuiPaper-root-MuiAppBar-root {
   background-color: #222 !important;
 }
 
 @media (min-width: 600px){
-.css-1cndkqf-MuiToolbar-root {
+  .css-1cndkqf-MuiToolbar-root {
     min-height: 48px !important;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .homePage{
+    >.body{
+      >.createRoom{
+        height: 160px;
+        align-items: flex-start;
+        justify-content: space-evenly;
+        flex-direction: column;
+
+        >.joinInput{
+          width: min(300px, 80vw);
+        }
+      }
+    }
   }
 }
 
@@ -58,46 +174,4 @@
   .css-19r6kue-MuiContainer-root {
       max-width: none !important;
   }
-}
-
-.joinBtn {
-  width: 250px; height: 30px;
-  color: #FFF;
-  transition: all 0.5s;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.joinBtn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  background-color: rgba(255,255,255,0.1);
-  transition: all 0.3s;
-}
-.joinBtn:hover::before {
-  opacity: 0 ;
-  transform: scale(0.5,0.5);
-}
-.joinBtn::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  opacity: 0;
-  transition: all 0.3s;
-  border: 1px solid rgba(255,255,255,0.5);
-  transform: scale(1.2,1.2);
-}
-.joinBtn:hover::after {
-  opacity: 1;
-  transform: scale(1,1);
 }
