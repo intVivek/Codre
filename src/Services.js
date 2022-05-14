@@ -11,8 +11,12 @@ export function fetchHome() {
 }
 
 export function createRoom(body) {
-    console.log(body);
     return callPost(baseUrl + '/createRoom', body);
+}
+
+export function fetchRoomData(body) {
+    console.log(body);
+    return callPost(baseUrl + '/roomData', body);
 }
 
 const callGet = (url) => {

@@ -11,11 +11,9 @@
 
     @keyframes entry {
         0% {
-            opacity: 0;
-            transform: scale(0.5);
+            transform: scale(0);
         }
         100% {
-            opacity: 1;
             transform: scale(1);
         }
     }
@@ -37,24 +35,94 @@
             align-items: flex-start;
             justify-content: center;
             row-gap: 16px;
+            overflow: hidden;
+
+            >.gradiantAnimation{
+
+                >.text{
+                    width: calc(100% - 2px); height: calc(100% - 2px);
+                    color: rgb(230, 230, 230);
+                    border-radius: 4px;
+                    box-shadow: 0 0 0 1px white;
+                    background-color: #222222;
+                    border: none;
+                    transition: 0.15s;
+                    display: flex;
+                    align-items: center;
+                    box-sizing: border-box;
+                    justify-content: space-between;
+                    background-repeat: no-repeat;
+                    background-position: left;
+                    background-position-x: 10px;
+                    padding-left: 10px;
+                    font-size: 1rem;
+                    letter-spacing: .00625em;
+                    user-select: none;
+                    outline: none !important;
+        
+                    &:hover{
+                    box-shadow: 0 0 0 1px #e6571f;
+                    border: none;
+                    transition: 0.15s;
+                    cursor: pointer;
+                    }
+        
+                    &:focus-visible{
+                    border: none;
+                    box-shadow: 0 0 0 1px #7da88800;
+                    cursor: pointer;
+                    }
+                }
+            }
 
             >.roomName{
-                width: 80%; height: 48px;
+                width: 80%;
+                height: 48px;
                 padding: 0px;
                 margin: 0px;
-                border: none;
                 margin-left: 10%;
+                border: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 4px;
+                // animation: textEntry 1.5s cubic-bezier(0, 0.83, 0, 0.97);
             }
 
             >.roomDesc{
                 width: 80%;
-                flex-grow: 0.6;
                 padding: 0px;
                 margin: 0px;
                 margin-left: 10%;
                 border: none;
+                flex-grow: 0.6;
                 resize: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 4px;
+
+                >textarea{
+                    resize: none;
+                }
             }
+
+            // @keyframes textEntry {
+            //     0% {
+            //         transform: translatex(-70%);
+            //         opacity: 0;
+            //     }
+            //     35% {
+
+                    
+            //         transform: translatex(-70%);
+            //         opacity: 0;
+            //     }
+            //     100% {
+            //         transform: translatex(0%);
+            //         opacity: 1;
+            //     }
+            // }
 
             >.createModalBtns{
                 width: 80%;
@@ -63,6 +131,47 @@
                 justify-content: flex-end;
                 column-gap: 12px;
                 transform: translateY(20px);
+
+                >.cancelBtn{
+                    width: 80px; height: 48px;
+                    color: #f54500;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 4px;
+
+                    &:hover{
+                        transition: 0.15s;
+                        cursor: pointer;
+                        background-color: #f5450015;
+                    }
+                }
+
+                >.createBtn{
+                    width: 120px; height: 48px;
+                    background: linear-gradient(-45deg,  #f35f25, #ff4800);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: white;
+                    border-radius: 4px;
+                    box-shadow: none;
+                    border: none;
+                    transition: 0.15s;
+                    font-size: 1rem;
+                    user-select: none;
+            
+                    &:hover{
+                      box-shadow: 0px 0px 14px 0px #f54500e8;
+                      transition: 0.15s;
+                      cursor: pointer;
+                    }
+            
+                    &:active{
+                      background-color: #f15f25;
+                      transition: 0.15s;
+                    }
+                }
             }
         }
     }
