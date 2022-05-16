@@ -59,12 +59,13 @@ const Home = ()=>{
         <div className='ownRoom'>
           <div  className='ownRoomTitle'>
             Your Rooms
+            <div className='border'></div>
           </div>
           <div className='ownRoomBody'>
             {
               createdRooms.map((room, i)=>{
                 console.log(room)
-                return <RoomBox room={room} index={i}/>
+                return <RoomBox data={room} index={i}/>
               })
             }
           </div>
