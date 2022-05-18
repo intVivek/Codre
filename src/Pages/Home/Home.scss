@@ -161,7 +161,7 @@
       >.ownRoomBody{
         width: 100%; height: max-content;
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
         justify-content: start;
         box-sizing: border-box;
         gap: 40px;
@@ -192,14 +192,19 @@
   .homePage{
     >.body{
       >.createRoom{
-        height: 160px;
+        height: max-content;
         align-items: flex-start;
         justify-content: space-evenly;
         flex-direction: column;
+        row-gap: 20px;
 
         >.joinInput{
           width: min(300px, 80vw);
         }
+      }
+
+      >.ownRoom{
+        margin-top: 20px;
       }
     }
   }
