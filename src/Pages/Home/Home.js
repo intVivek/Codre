@@ -13,7 +13,6 @@ import RoomBox from '../../Components/RoomBox/RoomBox';
 const Home = ()=>{
   const [openModal, setOpenModal] = useState(false);
 	const [userData, setUserData] = useState({});
-  const [createdRooms, setCreatedRooms] = useState([]);
   const navigate = useNavigate();
 
   useEffect(()=>{
@@ -21,8 +20,7 @@ const Home = ()=>{
     .then(res => {
       if(res?.status){
         console.log(res)
-        res && setUserData(res.user);
-        res && setCreatedRooms(res.createdRooms);
+        res && setUserData(res.home);
       }
       else{
         navigate('/');
@@ -63,9 +61,35 @@ const Home = ()=>{
           </div>
           <div className='ownRoomBody'>
             {
-              createdRooms.map((room, i)=>{
-                console.log(room)
-                return <RoomBox data={room} index={i}/>
+              userData.created && userData.created.map((room)=>{
+                console.log('created',room)
+                return <RoomBox
+                  color={userData.color}
+                  photo={userData.photos[0].value}
+                  roomName={room.roomName}
+                  invite={room.invite}
+                  id={room._id}
+                  name={userData.name.givenName}
+                />
+              })
+            }
+          </div>
+          <div  className='ownRoomTitle'>
+            Recently Joined
+            <div className='border'></div>
+          </div>
+          <div className='ownRoomBody'>
+            {
+              userData.recentlyJoined && userData.recentlyJoined.map((room)=>{
+                console.log('recentlyJoined' ,room);
+                return <RoomBox
+                    color={room.user.color}
+                    photo={room.user.photos[0].value}
+                    roomName={room.roomName}
+                    invite={room.invite}
+                    id={room._id}
+                    name={room.user.name.givenName}
+                  />
               })
             }
           </div>
