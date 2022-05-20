@@ -14,9 +14,8 @@ export function createRoom(body) {
     return callPost(baseUrl + '/createRoom', body);
 }
 
-export function fetchRoomData(body) {
-    console.log(body);
-    return callPost(baseUrl + '/roomData', body);
+export function checkRoom(body) {
+    return callPost(baseUrl + '/checkRoom', body);
 }
 
 const callGet = (url) => {

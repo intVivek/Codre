@@ -3,7 +3,7 @@ import NavBar from '../../Components/NavBar/NavBar.js';
 import {fetchHome} from '../../Services.js';
 import {useState,useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {createRoom, fetchRoomData} from '../../Services.js';
+import {createRoom, checkRoom} from '../../Services.js';
 import { toast } from 'react-toastify';
 import {ReactComponent as Close} from '../../Assets/icons/close.svg';
 import CreateModal from '../../Components/CreateModal/CreateModal';
@@ -13,6 +13,7 @@ import RoomBox from '../../Components/RoomBox/RoomBox';
 const Home = ()=>{
   const [openModal, setOpenModal] = useState(false);
 	const [userData, setUserData] = useState({});
+  const [joinInput, setJoinInput] = useState("");
   const navigate = useNavigate();
 
   useEffect(()=>{
@@ -44,6 +45,23 @@ const Home = ()=>{
     })
   }
 
+  const joinRoomHandler=()=>{                       
+    let room = joinInput;
+    room = room.split('/').pop();
+    room = room.replaceAll(' ','');
+    if(!room) return toast.error("Please Enter Room");
+    checkRoom({room})
+    .then(res=>{
+      if(res?.status){
+        console.log(res)
+        navigate(`/chat/${room}`);
+      }
+      else{
+        toast.error(res.message);
+      }
+    })
+  }
+
   return(
     <div className='homePage'>
       <NavBar img={userData.photos?userData.photos[0].value:""}/>
@@ -51,8 +69,8 @@ const Home = ()=>{
       <div className={openModal?'body blur':'body'}>
         <div className='createRoom'>
           <div className='createBtn' onClick={()=>setOpenModal(true)}><p>Create</p> <Close className={openModal?'addIcon addIconSpin':'addIcon'}/></div>
-          <div className='joinInput gradiantAnimation'><input className='inputField' placeholder='Enter a code or link'/></div>
-          <div className='joinBtn'>Join</div>
+          <div className='joinInput gradiantAnimation'><input className='inputField' placeholder='Enter a code or link' value={joinInput} onChange={e=>setJoinInput(e.target.value)}/></div>
+          <div className='joinBtn' onClick={joinRoomHandler}>Join</div>
         </div>
         <div className='ownRoom'>
           <div  className='ownRoomTitle'>
