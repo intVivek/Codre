@@ -12,7 +12,7 @@ const Login = ()=>{
 
   return(
     <div className='loginPage'>
-      <img className='background' src={background}/>
+      <img alt='background' className='background' src={background}/>
       <div className='left'>
         <div className='GoogleAuth' onClick={attemptAuth}>
           <img alt='googleIcon' className='icon' src='https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png'/>
