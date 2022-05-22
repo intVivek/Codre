@@ -20,7 +20,6 @@ const Home = ()=>{
     fetchHome()
     .then(res => {
       if(res?.status){
-        console.log(res)
         res && setUserData(res.home);
       }
       else{
@@ -28,15 +27,14 @@ const Home = ()=>{
       }
     })
     .catch(err => {
-        console.log(err)
     })
   },[]);
+  // eslint-disable-next-line
 
   const createHandler = (data)=>{
     createRoom(data)
     .then(res=>{
       if(res?.status){
-        console.log(res)
         navigate(`/chat/${res.room}`);
       }
       else{
@@ -53,7 +51,6 @@ const Home = ()=>{
     checkRoom({room})
     .then(res=>{
       if(res?.status){
-        console.log(res)
         navigate(`/chat/${room}`);
       }
       else{
@@ -80,7 +77,6 @@ const Home = ()=>{
           <div className='ownRoomBody'>
             {
               userData.created && userData.created.map((room)=>{
-                console.log('created',room)
                 return <RoomBox
                   color={userData.color}
                   photo={userData.photos[0].value}
@@ -99,7 +95,6 @@ const Home = ()=>{
           <div className='ownRoomBody'>
             {
               userData.recentlyJoined && userData.recentlyJoined.map((room)=>{
-                console.log('recentlyJoined' ,room);
                 return <RoomBox
                     color={room.user.color}
                     photo={room.user.photos[0].value}

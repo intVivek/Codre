@@ -1,6 +1,5 @@
 require('dotenv').config()
 const baseUrl = process.env.REACT_APP_API_URL;
-console.log(baseUrl)
 
 export function login(body) {
     return callPost(baseUrl + '/login', body);
@@ -18,9 +17,9 @@ export function checkRoom(body) {
     return callPost(baseUrl + '/checkRoom', body);
 }
 
-const callGet = (url) => {
-    return fetch(url).then(handleres);
-}
+// const callGet = (url) => {
+//     return fetch(url).then(handleres);
+// }
 
 const callPost = (url, body) => {
     return fetch(url, {
@@ -32,7 +31,6 @@ const callPost = (url, body) => {
 }
 
 const handleres = (res) => {
-    console.log(res);
     if (res.ok) {
         return res.json();
     }

@@ -17,7 +17,6 @@ const RoomBox = (props) => {
     checkRoom({room: id})
     .then(res=>{
       if(res?.status){
-        console.log(res)
         navigate(`/chat/${id}`);
       }
       else{
@@ -28,15 +27,15 @@ const RoomBox = (props) => {
 
   return (
     <div className='roomBoxMain' style={{border: `2px solid ${color}`}} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} onClick={clickHandler}>
-      <img className={hover?'backDPExpand':'backDP'} src ={photo}></img>
+      <img alt='dp' className={hover?'backDPExpand':'backDP'} src ={photo}></img>
       <div className={hover?'roomBoxIDHover':'roomBoxID'}>{id}</div>
       <div className={hover?'roomBoxHover':'roomBox'} >
-        <img className='dp' style={{border: `2px solid ${color}`}} src ={photo}></img>
+        <img className='dp' alt='dp' style={{border: `2px solid ${color}`}} src ={photo}></img>
         <div className='top' style={{background: `${color}`}}></div>
         <div className='filter' ></div>
         <div className='roomName'>{roomName}</div>
-        <div className='name'><img src={userIcon}/>{name}</div>
-        <div className='invite'><img src={invite?inviteIcon:openIcon}/>{invite?'Invite Only':'Open'}</div>
+        <div className='name'><img alt='userIcon' src={userIcon}/>{name}</div>
+        <div className='invite'><img alt='inviteIcon' src={invite?inviteIcon:openIcon}/>{invite?'Invite Only':'Open'}</div>
       </div>
     </div>
   )

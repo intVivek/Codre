@@ -1,5 +1,4 @@
 import {BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import {useState} from 'react';
 import Home from './Pages/Home/Home';
 import Chat from './Pages/Chat/Chat';
 import Login from './Pages/Login/Login';

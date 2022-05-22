@@ -1,9 +1,10 @@
 import './Chat.scss';
 import io from "socket.io-client";
-import {useState,useEffect,useRef} from 'react';
+import {useEffect,useRef} from 'react';
 import Editor from "@monaco-editor/react";
 import {createWidget} from '../../Utils/createWidget.js';
 import {useParams,useNavigate} from 'react-router-dom';
+require('dotenv').config();
 
 
 const Chat = ()=>{
@@ -54,7 +55,6 @@ const changeWidgetPosition =(cursor) => {
 
 
   // const changeSeleciton = (e) => {
-  //   console.log(e);
   //   var selectionArray = [];
   //   if (e.selection.startColumn == e.selection.endColumn && e.selection.startLineNumber == e.selection.endLineNumber) { 
   //       e.selection.endColumn++
@@ -74,7 +74,6 @@ const changeWidgetPosition =(cursor) => {
   //   }
 
   //   for (let data of e.secondarySelections) { 
-  //     console.log(data);
   //       if (data.startColumn == data.endColumn && data.startLineNumber == data.endLineNumber) {        
   //           selectionArray.push({
   //               range: data,
@@ -91,14 +90,13 @@ const changeWidgetPosition =(cursor) => {
   //           })
   //   }
   //   decorations[e.socketId] = editorRef.current.deltaDecorations(decorations[e.socketId], selectionArray);
-  //   console.log(decorations);
   // }
 
   const  onMount = (editor,monaco) => {
     var cursor;
     editorRef.current = editor;
     monacoRef.current=monaco;
-    socketRef.current = io('http://localhost:5000',{
+    socketRef.current = io(process.env.REACT_APP_API_URL,{
       query: {'room': room},
       reconnect: true,
       reconnectionDelay: 500,
@@ -143,7 +141,6 @@ const changeWidgetPosition =(cursor) => {
     })
 
     socketRef.current.on('selection', (data) =>{  
-      console.log(data); 
       // changeSeleciton(data);
       changeWidgetPosition(data);
     })
@@ -176,6 +173,7 @@ const changeWidgetPosition =(cursor) => {
       socketRef.current.disconnect();
     });
   }, [userData.current])
+  // eslint-disable-next-line
 
   const onChange = (v,e) => {
     if(e.changes[0].forceMoveMarkers === true || e.isFlush) return;
