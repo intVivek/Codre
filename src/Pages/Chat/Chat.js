@@ -172,8 +172,9 @@ const changeWidgetPosition =(cursor) => {
       socketRef.current.emit("clientLeft", userData.current.socketId,userData.current.room,editorRef.current.getModel().getValue());
       socketRef.current.disconnect();
     });
-  }, [userData.current])
   // eslint-disable-next-line
+  }, [userData.current])
+  
 
   const onChange = (v,e) => {
     if(e.changes[0].forceMoveMarkers === true || e.isFlush) return;

@@ -28,8 +28,9 @@ const Home = ()=>{
     })
     .catch(err => {
     })
-  },[]);
   // eslint-disable-next-line
+  },[]);
+  
 
   const createHandler = (data)=>{
     createRoom(data)
