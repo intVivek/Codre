@@ -5,12 +5,12 @@ import openIcon from '../../Assets/icons/unlock.svg';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import {checkRoom} from '../../Services.js';
+import { useState} from 'react';
 
 const RoomBox = (props) => {
   const {color, photo, roomName, invite, name, id} = props;
+  const [hover, setHover] = useState(false);
   const navigate = useNavigate();
-  
-  console.log(id);
 
   const clickHandler=()=>{      
     if(!id) return toast.error("Someting went wrong");
@@ -27,13 +27,17 @@ const RoomBox = (props) => {
   }
 
   return (
-    <div className='roomBox' style={{border: `2px solid ${color}`}} onClick={clickHandler}>
-      <img className='dp' style={{border: `2px solid ${color}`}} src ={photo.slice(0,-6)}></img>
-      <div className='top' style={{background: `${color}`}}></div>
-      <div className='filter' ></div>
-      <div className='roomName'>{id}</div>
-      <div className='name'><img src={userIcon}/>{name}</div>
-      <div className='invite'><img src={invite?inviteIcon:openIcon}/>{invite?'Invite Only':'Open'}</div>
+    <div className='roomBoxMain' style={{border: `2px solid ${color}`}} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} onClick={clickHandler}>
+      <img className={hover?'backDPExpand':'backDP'} src ={photo}></img>
+      <div className={hover?'roomBoxIDHover':'roomBoxID'}>{id}</div>
+      <div className={hover?'roomBoxHover':'roomBox'} >
+        <img className='dp' style={{border: `2px solid ${color}`}} src ={photo}></img>
+        <div className='top' style={{background: `${color}`}}></div>
+        <div className='filter' ></div>
+        <div className='roomName'>{roomName}</div>
+        <div className='name'><img src={userIcon}/>{name}</div>
+        <div className='invite'><img src={invite?inviteIcon:openIcon}/>{invite?'Invite Only':'Open'}</div>
+      </div>
     </div>
   )
 }

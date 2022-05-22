@@ -1,78 +1,201 @@
-.roomBox{
+.roomBoxMain{
+    position: relative;
     width: 180px; height: 140px;
     overflow: hidden;
-    position: relative;
-    background-color: #222222;
     border-radius: 10px;
     box-sizing: border-box;
-    
+    cursor: pointer;
 
-    >.dp{
+    .roomBoxID{
+        position: absolute;
+        top: 120%; left: 50%;
+        color: rgba(0, 0, 0, 0);
+        font-size: 12px;
+        transform: translate(-50%, -50%);
+        transition: 0.4s;
+    }
+
+    >.roomBoxIDHover{
+        position: absolute;
+        top: 70%; left: 50%;
+        z-index: 10;
+        font-size: 12px;
+        font-weight: 500;
+        color: rgb(209, 209, 209);
+        transform: translate(-50%, -50%);
+        transition: 0.4s ease-in;
+    }
+
+    >.backDP{
         position: absolute;
         top: 20%; right: 20%;
         width: 45px; height: auto;
         border-radius: 50%;
-        z-index: 4;
+        transition: 0.4s;
     }
 
-    >.top{
-        width: 200%; height:80%;
+    >.backDPExpand{
         position: absolute;
-        bottom: 60%; left: -50%;
-        z-index: 2;
-        transform: rotateZ(-7deg);
+        top: -20px; right: calc(0% - 2px);
+        width: 100%; height: auto;
+        transition: 0.4s;
     }
 
-    // >.filter{
-    //     width: 100%; height: 100%;
-    //     position: absolute;
-    //     top: 0; left: 0;
-    //     z-index: 3;
-    //     backdrop-filter: blur(15px);
-    // }
+    >.roomBox{
+        width: 100%; height: 100%;
+        position: relative;
+        background-color: #222222;
+        transition: 0.4s;
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+        filter: blur(0px);
 
-    >.roomName{
-        position: absolute;
-        margin-top: 5%;
-        margin-left: 5%;
-        color: #222222;
-        z-index: 3;
-        display: flex;
-        align-items: center;
-        font-weight: 800;
-        font-size: 15px;
-    }
+        >.dp{
+            position: absolute;
+            top: 20%; right: 20%;
+            width: 45px; height: auto;
+            border-radius: 50%;
+            z-index: 4;
+            transition: 0.4s;
+        }
 
-    >.name{
-        position: absolute;
-        margin-top: 53%;
-        margin-left: 5%;
-        color: rgba(255, 255, 255, 0.918);
-        z-index: 3;
-        display: flex;
-        align-items: center;
-        font-size: 10px;
+        >.top{
+            width: 200%; height:80%;
+            position: absolute;
+            bottom: 60%; left: -50%;
+            z-index: 2;
+            transform: rotateZ(-7deg);
+            transition: 0.4s;
+        }
 
-        >img{
-            width: 12px; height: 12px;
-            margin-right: 5px;
+        >.roomName{
+            position: absolute;
+            margin-top: 5%;
+            margin-left: 5%;
+            color: #222222;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            font-weight: 800;
+            font-size: 15px;
+            transition: 0.4s;
+        }
+
+        >.name{
+            position: absolute;
+            margin-top: 53%;
+            margin-left: 5%;
+            color: rgba(255, 255, 255, 0.918);
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            font-size: 10px;
+            transition: 0.4s;
+
+            >img{
+                width: 12px; height: 12px;
+                margin-right: 5px;
+                transition: 0.4s;
+            }
+        }
+
+        >.invite{
+            position: absolute;
+            margin-top: 65%;
+            margin-left: 5%;
+            color: rgba(255, 255, 255, 0.918);
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            font-size: 10px;
+            transition: 0.4s;
+
+            >img{
+                width: 12px; height: 12px;
+                margin-right: 5px;
+                filter: brightness(0.6);
+                transition: 0.4s;
+            }
         }
     }
+    >.roomBoxHover{
+        width: 100%; height: 100%;
+        position: relative;
+        background-color: #000000;
+        filter: blur(4px);
+        clip-path: polygon(0 30%, 100% 50%, 100% 100%, 0% 100%);
+        transition: 0.4s;
 
-    >.invite{
-        position: absolute;
-        margin-top: 65%;
-        margin-left: 5%;
-        color: rgba(255, 255, 255, 0.918);
-        z-index: 3;
-        display: flex;
-        align-items: center;
-        font-size: 10px;
 
-        >img{
-            width: 12px; height: 12px;
-            margin-right: 5px;
-            filter: brightness(0.6);
+        >.dp{
+            position: absolute;
+            top: -20px; right: calc(0% - 2px);
+            width: 100%; height: auto;
+            border-radius: 0%;
+            z-index: 4;
+            border: 2px solid rgba(0, 0, 0, 0) !important; 
+            transition: 0.4s;
+        }
+
+        >.top{
+            width: 500%; height:400%;
+            position: absolute;
+            bottom: -240%; left: -100%;
+            z-index: 7;
+            transform: rotateZ(-175deg);
+            transition: 0.4s;
+            background: rgba(0, 0, 0, 0.452) !important;
+        }
+
+        >.roomName{
+            position: absolute;
+            margin-top: 5%;
+            margin-left: 5%;
+            color: #222222;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            font-weight: 800;
+            font-size: 15px;
+            opacity: 0;
+            transition: 0.4s;
+        }
+
+        >.name{
+            position: absolute;
+            margin-top: 53%;
+            margin-left: 5%;
+            color: rgba(255, 255, 255, 0.918);
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            font-size: 10px;
+            opacity: 0;
+            transition: 0.4s;
+
+            >img{
+                width: 12px; height: 12px;
+                margin-right: 5px;
+            }
+        }
+
+        >.invite{
+            position: absolute;
+            margin-top: 65%;
+            margin-left: 5%;
+            color: rgba(255, 255, 255, 0.918);
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            font-size: 10px;
+            transition: 0.4s;
+            opacity: 0;
+
+            >img{
+                width: 12px; height: 12px;
+                margin-right: 5px;
+                filter: brightness(0.6);
+                transition: 0.4s;
+            }
         }
     }
 }
