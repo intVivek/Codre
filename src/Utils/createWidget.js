@@ -43,10 +43,9 @@ const createDivElement = (style, className, innerHTML) => {
         height: '15px',
         borderRadius: '999px',
         margin: '0 5px 0 0',
-        // backgroundImage: `url(${user?.photos[0].value.slice(0,-4)}15)`
-        backgroundImage: user?.photos[0].value,
+        backgroundImage: `url(${user?.photos[0].value.slice(0,-4)}15)`
+        // backgroundImage: user?.photos[0].value,
       }, 'avatar'),
-
       name = createDivElement({
         position: 'relative',
         color: 'black',
@@ -56,6 +55,7 @@ const createDivElement = (style, className, innerHTML) => {
 
     widget.append(cursor, profileCard);
     profileCard.append(avatar, name);
+    console.log(user?.photos[0].value);
     return widget;
   }
 

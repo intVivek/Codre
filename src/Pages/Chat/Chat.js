@@ -4,6 +4,7 @@ import {useEffect,useRef} from 'react';
 import Editor from "@monaco-editor/react";
 import {createWidget} from '../../Utils/createWidget.js';
 import {useParams,useNavigate} from 'react-router-dom';
+import NavBar from '../../Components/NavBar/NavBar.js';
 require('dotenv').config();
 
 
@@ -183,6 +184,7 @@ const changeWidgetPosition =(cursor) => {
 
   return(
     <div className='chatPage'>
+      <NavBar img={userData.photos?userData.photos[0].value:""}/>
       <div className='window'>
        <Editor
           height="90vh"
