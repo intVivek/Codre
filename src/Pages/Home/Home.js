@@ -13,15 +13,17 @@ import RoomBox from '../../Components/RoomBox/RoomBox';
 const Home = ()=>{
   const [openModal, setOpenModal] = useState(false);
 	const [userData, setUserData] = useState({});
+  const [popular, setPopular] = useState([]);
   const [joinInput, setJoinInput] = useState("");
   const navigate = useNavigate();
 
   useEffect(()=>{
     fetchHome()
     .then(res => {
-      console.log(res.status);
+      console.log(res.popular);
       if(res?.status){
         res && setUserData(res.home);
+        res && setPopular(res.popular);
       }
       else{
         navigate('/');
@@ -72,32 +74,13 @@ const Home = ()=>{
           <div className='joinBtn' onClick={joinRoomHandler}>Join</div>
         </div>
         <div className='ownRoom'>
-          <div  className='ownRoomTitle'>
-            Your Rooms
+        {popular?.length>0 && <><div  className='ownRoomTitle'>
+            Popular Rooms
             <div className='border'></div>
           </div>
           <div className='ownRoomBody'>
             {
-              userData.created && userData.created.map((room,i)=>{
-                return <RoomBox
-                  color={userData.color}
-                  photo={userData.photos[0].value}
-                  roomName={room.roomName}
-                  invite={room.invite}
-                  id={room._id}
-                  name={userData.name.givenName}
-                  key={i}
-                />
-              })
-            }
-          </div>
-          <div  className='ownRoomTitle'>
-            Recently Joined
-            <div className='border'></div>
-          </div>
-          <div className='ownRoomBody'>
-            {
-              userData.recentlyJoined && userData.recentlyJoined.map((room,i)=>{
+              popular.map((room,i)=>{
                 return <RoomBox
                     color={room.user.color}
                     photo={room.user.photos[0].value}
@@ -109,7 +92,45 @@ const Home = ()=>{
                   />
               })
             }
+          </div></>}
+          {userData?.created?.length>0 && <><div  className='ownRoomTitle'>
+            Your Rooms
+            <div className='border'></div>
           </div>
+          <div className='ownRoomBody'>
+            {
+              userData.created.map((room,i)=>{
+                return <RoomBox
+                  color={userData.color}
+                  photo={userData.photos[0].value}
+                  roomName={room.roomName}
+                  invite={room.invite}
+                  id={room._id}
+                  name={userData.name.givenName}
+                  key={i}
+                />
+              })
+            }
+          </div></>}
+          {userData?.recentlyJoined?.length>0 && <><div  className='ownRoomTitle'>
+            Recently Joined
+            <div className='border'></div>
+          </div>
+          <div className='ownRoomBody'>
+            {
+              userData.recentlyJoined.map((room,i)=>{
+                return <RoomBox
+                    color={room.user.color}
+                    photo={room.user.photos[0].value}
+                    roomName={room.roomName}
+                    invite={room.invite}
+                    id={room._id}
+                    name={room.user.name.givenName}
+                    key={i}
+                  />
+              })
+            }
+          </div></>}
         </div>
       </div>
     </div>

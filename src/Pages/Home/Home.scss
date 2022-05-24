@@ -1,9 +1,12 @@
 .homePage{
+  position: absolute;
   width: 100%; height: max-content;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: #111;
+  top: 0;
+
 
   >.body{
     display: flex;

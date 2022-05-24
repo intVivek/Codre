@@ -11,6 +11,8 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
+import logo from '../../Assets/icons/logo.svg';
+import logoName from '../../Assets/icons/logoName.svg';
 
 const pages = [];
 const settings = ['Profile','Logout'];
@@ -45,7 +47,17 @@ const ResponsiveAppBar = (props) => {
             component="div"
             sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}
           >
-            LOGO
+            <img src={logo} alt="logo" style={{
+                width: '25px',
+                height: 'auto',
+                filter: 'invert(100%)'
+              }}/>
+              <img src={logoName} alt="logoName" style={{
+                width: 'auto',
+                height: '18px',
+                marginLeft: '12px',
+                filter: 'invert(100%)',
+              }}/>
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
