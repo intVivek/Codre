@@ -12,12 +12,14 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import logo from '../../Assets/icons/logo.svg';
+import {useNavigate} from 'react-router-dom';
 
 const pages = [];
 const settings = ['Profile','Logout'];
 
 const Logo = ()=>{
-  return<>
+  const navigate = useNavigate();
+  return<div onClick={()=>navigate('/home')} style={{width: 'max-content', height: '100%',display: 'flex', alignItems: 'center', cursor: 'pointer'}}>
     <img src={logo} alt="logo" style={{
       width: '25px',
       height: 'auto',
@@ -31,7 +33,7 @@ const Logo = ()=>{
         marginTop: '5px',
         userSelect: 'none'
     }}>Codre</div>
-  </>
+  </div>
 }
 
 const ResponsiveAppBar = (props) => {

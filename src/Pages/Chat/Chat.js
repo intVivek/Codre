@@ -47,14 +47,12 @@ const Chat = ()=>{
     }
 }
 
-
 const changeWidgetPosition =(cursor) => {
   editorRef.current.removeContentWidget(contentWidgets[cursor.socketId])
   contentWidgets[cursor.socketId].position.lineNumber = cursor.selection.endLineNumber
   contentWidgets[cursor.socketId].position.column = cursor.selection.endColumn
   editorRef.current.addContentWidget(contentWidgets[cursor.socketId])
 }
-
 
   // const changeSeleciton = (e) => {
   //   var selectionArray = [];
