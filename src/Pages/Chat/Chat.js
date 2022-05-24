@@ -1,6 +1,6 @@
 import './Chat.scss';
 import io from "socket.io-client";
-import {useEffect,useRef} from 'react';
+import {useEffect,useRef,useState} from 'react';
 import Editor from "@monaco-editor/react";
 import {createWidget} from '../../Utils/createWidget.js';
 import {useParams,useNavigate} from 'react-router-dom';
@@ -19,6 +19,7 @@ const Chat = ()=>{
 
   const navigate = useNavigate();
   const {room} = useParams();
+  const [user, setUser] = useState({});
 
   const insertWidget = (e) => {
     contentWidgets[e.socketId] = {
@@ -112,7 +113,8 @@ const changeWidgetPosition =(cursor) => {
 
     socketRef.current.on('personalData',  (data) => { 
       userData.current = data;
-      console.log(userData.current);
+      console.log(data);
+      setUser(data);
     })
 
     socketRef.current.on('connected',  (data) => { 
@@ -135,6 +137,7 @@ const changeWidgetPosition =(cursor) => {
     });
 
     socketRef.current.on('loadDoc', modelValue =>{
+      console.log(modelValue);
       modelValue && editor.getModel().setValue(modelValue?.data);
     });
 
@@ -185,7 +188,7 @@ const changeWidgetPosition =(cursor) => {
 
   return(
     <div className='chatPage'>
-      <NavBar img={userData.photos?userData.photos[0].value:""}/>
+      <NavBar img={user?.photos?user?.photos[0].value:''}/>
       <div className='window'>
        <Editor
           height="90vh"

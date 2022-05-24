@@ -12,10 +12,27 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import logo from '../../Assets/icons/logo.svg';
-import logoName from '../../Assets/icons/logoName.svg';
 
 const pages = [];
 const settings = ['Profile','Logout'];
+
+const Logo = ()=>{
+  return<>
+    <img src={logo} alt="logo" style={{
+      width: '25px',
+      height: 'auto',
+      filter: 'invert(100%)',
+      userSelect: 'none'
+    }}/>
+    <div style={{
+        fontFamily: 'Flamenco, cursive',
+        fontSize: '1.5rem',
+        marginLeft: '12px',
+        marginTop: '5px',
+        userSelect: 'none'
+    }}>Codre</div>
+  </>
+}
 
 const ResponsiveAppBar = (props) => {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -47,17 +64,7 @@ const ResponsiveAppBar = (props) => {
             component="div"
             sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}
           >
-            <img src={logo} alt="logo" style={{
-                width: '25px',
-                height: 'auto',
-                filter: 'invert(100%)'
-              }}/>
-              <img src={logoName} alt="logoName" style={{
-                width: 'auto',
-                height: '18px',
-                marginLeft: '12px',
-                filter: 'invert(100%)',
-              }}/>
+            <Logo/>
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -102,7 +109,7 @@ const ResponsiveAppBar = (props) => {
             component="div"
             sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}
           >
-            LOGO
+            <Logo/>
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
