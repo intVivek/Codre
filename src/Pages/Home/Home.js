@@ -19,6 +19,7 @@ const Home = ()=>{
   useEffect(()=>{
     fetchHome()
     .then(res => {
+      console.log(res.status);
       if(res?.status){
         res && setUserData(res.home);
       }
