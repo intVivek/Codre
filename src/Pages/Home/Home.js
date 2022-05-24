@@ -78,7 +78,7 @@ const Home = ()=>{
           </div>
           <div className='ownRoomBody'>
             {
-              userData.created && userData.created.map((room)=>{
+              userData.created && userData.created.map((room,i)=>{
                 return <RoomBox
                   color={userData.color}
                   photo={userData.photos[0].value}
@@ -86,6 +86,7 @@ const Home = ()=>{
                   invite={room.invite}
                   id={room._id}
                   name={userData.name.givenName}
+                  key={i}
                 />
               })
             }
@@ -96,7 +97,7 @@ const Home = ()=>{
           </div>
           <div className='ownRoomBody'>
             {
-              userData.recentlyJoined && userData.recentlyJoined.map((room)=>{
+              userData.recentlyJoined && userData.recentlyJoined.map((room,i)=>{
                 return <RoomBox
                     color={room.user.color}
                     photo={room.user.photos[0].value}
@@ -104,6 +105,7 @@ const Home = ()=>{
                     invite={room.invite}
                     id={room._id}
                     name={room.user.name.givenName}
+                    key={i}
                   />
               })
             }

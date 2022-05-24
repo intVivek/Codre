@@ -112,6 +112,7 @@ const changeWidgetPosition =(cursor) => {
 
     socketRef.current.on('personalData',  (data) => { 
       userData.current = data;
+      console.log(userData.current);
     })
 
     socketRef.current.on('connected',  (data) => { 
