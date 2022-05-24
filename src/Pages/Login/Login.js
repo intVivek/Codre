@@ -8,7 +8,6 @@ const Login = ()=>{
 
   const baseUrl = process.env.REACT_APP_API_URL;
   const attemptAuth = () => {
-    console.log(baseUrl);
     window.location.replace(`${baseUrl}/auth/google`);
   };
 

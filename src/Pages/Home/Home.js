@@ -20,7 +20,6 @@ const Home = ()=>{
   useEffect(()=>{
     fetchHome()
     .then(res => {
-      console.log(res.popular);
       if(res?.status){
         res && setUserData(res.home);
         res && setPopular(res.popular);

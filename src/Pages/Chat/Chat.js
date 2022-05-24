@@ -113,7 +113,6 @@ const changeWidgetPosition =(cursor) => {
 
     socketRef.current.on('personalData',  (data) => { 
       userData.current = data;
-      console.log(data);
       setUser(data);
     })
 
@@ -137,7 +136,6 @@ const changeWidgetPosition =(cursor) => {
     });
 
     socketRef.current.on('loadDoc', modelValue =>{
-      console.log(modelValue);
       modelValue && editor.getModel().setValue(modelValue?.data);
     });
 

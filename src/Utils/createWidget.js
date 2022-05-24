@@ -55,7 +55,6 @@ const createDivElement = (style, className, innerHTML) => {
 
     widget.append(cursor, profileCard);
     profileCard.append(avatar, name);
-    console.log(user?.photos[0].value);
     return widget;
   }
 
