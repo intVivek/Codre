@@ -6,7 +6,8 @@
   flex-direction: column;
   background-color: #111;
   top: 0;
-
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
 
   >.body{
     display: flex;
@@ -168,7 +169,9 @@
         justify-content: start;
         box-sizing: border-box;
         gap: 40px;
+        margin-bottom: 30px;
         padding: 40px min(100px, 5%) 0 min(100px, 5%);
+        padding-top: 10px;
       }
     }
   }

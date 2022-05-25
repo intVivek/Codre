@@ -134,11 +134,11 @@ const changeWidgetPosition =(cursor) => {
     });
 
     socketRef.current.on('loadDoc', modelValue =>{
-      modelValue && editor.getModel().setValue(modelValue?.data);
+      modelValue && editor?.getModel()?.setValue(modelValue?.data);
     });
 
     socketRef.current.on('clientRequestedData',(id)=>{
-      socketRef.current.emit('clientRequestedData',{id,'data':editor.getModel().getValue()});
+      socketRef.current.emit('clientRequestedData',{id,'data':editor?.getModel()?.getValue()});
     })
 
     socketRef.current.on('selection', (data) =>{  
@@ -147,9 +147,10 @@ const changeWidgetPosition =(cursor) => {
     })
 
     socketRef.current.on('exit', (data) =>{   
-      editorRef.current.deltaDecorations(decorations[data], []);
+      console.log(data);
       editorRef.current.removeContentWidget(contentWidgets[data]);
-      delete decorations[data]
+      // editorRef.current.deltaDecorations(decorations[data], []);
+      // delete decorations[data]
     })
 
     socketRef.current.on('textChange', data => {
@@ -193,6 +194,10 @@ const changeWidgetPosition =(cursor) => {
           theme= 'vs-dark'
           onMount={onMount}
           onChange={onChange}
+          options={{    
+            fontFamily: 'Consolas, "Courier New", monospace',
+            tabSize: 4
+          }}
         />
       </div>
     </div>
