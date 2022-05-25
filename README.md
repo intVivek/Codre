@@ -1,6 +1,6 @@
-[Try It Here](https://dyeus.netlify.app/)
+[Try It Here](https://www.codre.itsvivek.me/)
 
 # Screenshots
 
 <img src="./codredemo.gif">
-<img src="home.jpg">
+<img src="home.png">
