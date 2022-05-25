@@ -2,5 +2,5 @@
 
 # Screenshots
 
-<img src="./codredemo.gif" width="32%">
-<img src="home.jpg" width="32%">
+<img src="./codredemo.gif">
+<img src="home.jpg">
