@@ -3,4 +3,4 @@
 # Screenshots
 
 <img src="./codredemo.gif">
-<img src="home.png">
+<img src="home.png" width='800px'>
