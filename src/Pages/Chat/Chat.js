@@ -14,7 +14,7 @@ const Chat = ()=>{
   const socketRef = useRef(null);
   const monacoRef = useRef(null);
   var contentWidgets = {}
-  var decorations = {}
+//   var decorations = {}
   var users = {}
 
   const navigate = useNavigate();
