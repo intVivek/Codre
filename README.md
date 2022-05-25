@@ -2,7 +2,7 @@
 
 # Codre
 
-**Codre** Collaborative coding is a tool where pairs or teams of
+**Codre** is a tool/platform where pairs or teams of
 programmers work together on a project by coding each
 other's ideas or editing each other's code.
 
