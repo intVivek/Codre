@@ -3,9 +3,11 @@ import {useState, useEffect} from 'react';
 
 const LoadingPage = (props) => {
     const [loading, setLoading] = useState(true);
+    const [skipCount, setSkipCount] = useState(true);
 
     useEffect(()=>{
-        !props.loading && setTimeout(()=>{
+        if (skipCount) setSkipCount(false);
+        if(!skipCount) setTimeout(()=>{
             setLoading(false);
         },1600);
     },[props.loading])
