@@ -1,16 +1,22 @@
 import './LoadingPage.scss';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
+
 
 const LoadingPage = (props) => {
     const [loading, setLoading] = useState(true);
-    const [skipCount, setSkipCount] = useState(true);
+    const isMounted = useRef(false);
 
     useEffect(()=>{
-        if (skipCount) setSkipCount(false);
-        if(!skipCount) setTimeout(()=>{
-            setLoading(false);
-        },1600);
-    // eslint-disable-next-line
+        if (isMounted.current) {
+            setTimeout(()=>{
+                setLoading(false);
+            },1600);
+            console.log('14');
+        }
+        else{
+            if(props.loading)isMounted.current = true;
+            console.log('18');
+        }
     },[props.loading])
     return (
         <>
