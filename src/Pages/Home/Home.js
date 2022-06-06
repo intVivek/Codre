@@ -8,27 +8,34 @@ import { toast } from 'react-toastify';
 import {ReactComponent as Close} from '../../Assets/icons/close.svg';
 import CreateModal from '../../Components/CreateModal/CreateModal';
 import RoomBox from '../../Components/RoomBox/RoomBox';
-
+import LoadingPage from '../LoadingPage/LoadingPage';
+import MosaicLoading from '../../Components/MosaicLoading/MosaicLoading.js';
 
 const Home = ()=>{
   const [openModal, setOpenModal] = useState(false);
 	const [userData, setUserData] = useState({});
   const [popular, setPopular] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [roomOpenLoading, setRoomOpenLoading] = useState(false);
   const [joinInput, setJoinInput] = useState("");
   const navigate = useNavigate();
 
   useEffect(()=>{
+    setLoading(true);
     fetchHome()
     .then(res => {
       if(res?.status){
-        res && setUserData(res.home);
-        res && setPopular(res.popular);
+        res && setUserData(res?.home[0]);
+        res && setPopular(res?.home[1]);
+        setLoading(false);
       }
       else{
         navigate('/');
       }
     })
     .catch(err => {
+      setLoading(false);
+      toast.error("Something went wrong");
     })
   // eslint-disable-next-line
   },[]);
@@ -64,6 +71,8 @@ const Home = ()=>{
 
   return(
     <div className='homePage'>
+      <LoadingPage loading={loading}/>
+      { roomOpenLoading && <MosaicLoading />}
       <NavBar img={userData.photos?userData.photos[0].value:""}/>
       {openModal && <CreateModal createHandler={createHandler} userData={userData} setOpenModal={setOpenModal} />}
       <div className={openModal?'body blur':'body'}>
@@ -88,6 +97,7 @@ const Home = ()=>{
                     id={room._id}
                     name={room.user.name.givenName}
                     key={i}
+                    setLoading={setRoomOpenLoading}
                   />
               })
             }
@@ -107,6 +117,7 @@ const Home = ()=>{
                   id={room._id}
                   name={userData.name.givenName}
                   key={i}
+                  setLoading={setRoomOpenLoading}
                 />
               })
             }
@@ -126,6 +137,7 @@ const Home = ()=>{
                     id={room._id}
                     name={room.user.name.givenName}
                     key={i}
+                    setLoading={setRoomOpenLoading}
                   />
               })
             }

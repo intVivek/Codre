@@ -147,7 +147,6 @@ const changeWidgetPosition =(cursor) => {
     })
 
     socketRef.current.on('exit', (data) =>{   
-      console.log(data);
       editorRef.current.removeContentWidget(contentWidgets[data]);
       // editorRef.current.deltaDecorations(decorations[data], []);
       // delete decorations[data]

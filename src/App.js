@@ -11,7 +11,7 @@ function App() {
 			<BrowserRouter>
 					<Routes>
 						<Route exact path="/" element={<Login />}/>
-						<Route exact path="/chat/:room" element={<Chat />}/>
+						<Route exact path="/room/:room" element={<Chat />}/>
 						<Route exact path="/home" element={<Home />}/>
 						<Route path="*" element={<Navigate to="/home"/>} />
 					</Routes>

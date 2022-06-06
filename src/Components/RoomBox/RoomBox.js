@@ -8,16 +8,18 @@ import {checkRoom} from '../../Services.js';
 import { useState} from 'react';
 
 const RoomBox = (props) => {
-  const {color, photo, roomName, invite, name, id} = props;
+  const {color, photo, roomName, invite, name, id, setLoading} = props;
   const [hover, setHover] = useState(false);
   const navigate = useNavigate();
 
-  const clickHandler=()=>{      
+  const clickHandler=()=>{    
+    setLoading(true);
     if(!id) return toast.error("Someting went wrong");
     checkRoom({room: id})
     .then(res=>{
       if(res?.status){
-        navigate(`/chat/${id}`);
+        setLoading(false);
+        navigate(`/room/${id}`);
       }
       else{
         toast.error("Someting went wrong");
