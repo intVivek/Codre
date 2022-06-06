@@ -10,6 +10,7 @@ const LoadingPage = (props) => {
         if(!skipCount) setTimeout(()=>{
             setLoading(false);
         },1600);
+    // eslint-disable-next-line
     },[props.loading])
     return (
         <>
