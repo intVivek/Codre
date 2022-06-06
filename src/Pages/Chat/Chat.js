@@ -5,6 +5,7 @@ import Editor from "@monaco-editor/react";
 import {createWidget} from '../../Utils/createWidget.js';
 import {useParams,useNavigate} from 'react-router-dom';
 import NavBar from '../../Components/NavBar/NavBar.js';
+import LoadingPage from '../LoadingPage/LoadingPage.js';
 require('dotenv').config();
 
 
@@ -20,6 +21,7 @@ const Chat = ()=>{
   const navigate = useNavigate();
   const {room} = useParams();
   const [user, setUser] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const insertWidget = (e) => {
     contentWidgets[e.socketId] = {
@@ -48,10 +50,10 @@ const Chat = ()=>{
 }
 
 const changeWidgetPosition =(cursor) => {
-  editorRef.current.removeContentWidget(contentWidgets[cursor.socketId])
-  contentWidgets[cursor.socketId].position.lineNumber = cursor.selection.endLineNumber
-  contentWidgets[cursor.socketId].position.column = cursor.selection.endColumn
-  editorRef.current.addContentWidget(contentWidgets[cursor.socketId])
+  editorRef.current.removeContentWidget(contentWidgets[cursor?.socketId])
+  contentWidgets[cursor.socketId].position.lineNumber = cursor?.selection.endLineNumber
+  contentWidgets[cursor.socketId].position.column = cursor?.selection.endColumn
+  editorRef.current.addContentWidget(contentWidgets[cursor?.socketId])
 }
 
   // const changeSeleciton = (e) => {
@@ -92,10 +94,12 @@ const changeWidgetPosition =(cursor) => {
   //   decorations[e.socketId] = editorRef.current.deltaDecorations(decorations[e.socketId], selectionArray);
   // }
 
+
   const  onMount = (editor,monaco) => {
     var cursor;
     editorRef.current = editor;
     monacoRef.current=monaco;
+    setLoading(true);
     socketRef.current = io(process.env.REACT_APP_API_URL,{
       query: {'room': room},
       reconnect: true,
@@ -111,6 +115,7 @@ const changeWidgetPosition =(cursor) => {
 
     socketRef.current.on('personalData',  (data) => { 
       userData.current = data;
+      setLoading(false);
       setUser(data);
     })
 
@@ -134,7 +139,7 @@ const changeWidgetPosition =(cursor) => {
     });
 
     socketRef.current.on('loadDoc', modelValue =>{
-      modelValue && editor?.getModel()?.setValue(modelValue?.data);
+      modelValue && editor && editor?.getModel()?.setValue(modelValue?.data);
     });
 
     socketRef.current.on('clientRequestedData',(id)=>{
@@ -184,10 +189,10 @@ const changeWidgetPosition =(cursor) => {
 
   return(
     <div className='chatPage'>
+      <LoadingPage loading={loading}/>
       <NavBar img={user?.photos?user?.photos[0].value:''}/>
       <div className='window'>
        <Editor
-          height="90vh"
           width="100vw"
           defaultLanguage="javascript"
           theme= 'vs-dark'

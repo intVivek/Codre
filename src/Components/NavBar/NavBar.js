@@ -1,4 +1,4 @@
-import * as React from 'react';
+import {useState} from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -13,6 +13,9 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import logo from '../../Assets/icons/logo.svg';
 import {useNavigate} from 'react-router-dom';
+import {logout} from '../../Services.js';
+import { toast } from 'react-toastify';
+import {ReactComponent as Loading} from '../../Assets/icons/loading.svg';
 
 const pages = [];
 const settings = ['Profile','Logout'];
@@ -37,8 +40,11 @@ const Logo = ()=>{
 }
 
 const ResponsiveAppBar = (props) => {
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [anchorElNav, setAnchorElNav] = useState(null);
+  const [anchorElUser, setAnchorElUser] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -55,6 +61,29 @@ const ResponsiveAppBar = (props) => {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+  const handleMenu = (val)=>{
+    setLoading(true);
+    if(val==='Logout'){
+      logout()
+      .then(res=>{
+        setLoading(false);
+        if(res?.status){
+          navigate('/');
+        }
+        else{
+          toast.error("Something went wrong");
+        }
+      })
+      .catch(err => {
+        setLoading(false);
+        toast.error("Something went wrong");
+      })
+    }
+    else if(val==='home'){
+      navigate('/home');
+    }
+  }
 
   return (
     <AppBar position="static" sx={{ height: "48px" }}>
@@ -148,8 +177,8 @@ const ResponsiveAppBar = (props) => {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
+                <MenuItem key={setting} onClick={()=>handleMenu(setting)}>
+                  <Typography textAlign={'right'} color={'#dfdfdf'}>{setting}{loading && setting==='Logout' && <Loading style={{width: '12px', height: '12px', marginLeft: '5px'}}/>}</Typography>
                 </MenuItem>
               ))}
             </Menu>

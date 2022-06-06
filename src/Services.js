@@ -17,6 +17,10 @@ export function checkRoom(body) {
     return callPost(baseUrl + '/checkRoom', body);
 }
 
+export function logout() {
+    return callPost(baseUrl + '/logout', {});
+}
+
 // const callGet = (url) => {
 //     return fetch(url).then(handleres);
 // }
