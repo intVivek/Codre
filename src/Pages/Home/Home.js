@@ -73,7 +73,7 @@ const Home = ()=>{
     <div className='homePage'>
       <LoadingPage loading={loading}/>
       { roomOpenLoading && <MosaicLoading />}
-      <NavBar img={userData.photos?userData.photos[0].value:""}/>
+      <NavBar img={userData?.photos?userData.photos[0].value:""}/>
       {openModal && <CreateModal createHandler={createHandler} userData={userData} setOpenModal={setOpenModal} />}
       <div className={openModal?'body blur':'body'}>
         <div className='createRoom'>
