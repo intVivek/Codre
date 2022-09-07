@@ -195,7 +195,7 @@ const changeWidgetPosition =(cursor) => {
        <Editor
           width="100vw"
           defaultLanguage="javascript"
-          theme= 'vs-dark'
+          theme= 'vs-light'
           onMount={onMount}
           onChange={onChange}
           options={{    
