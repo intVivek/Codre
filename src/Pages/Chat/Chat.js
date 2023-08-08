@@ -13,8 +13,7 @@ const Chat = ()=>{
   const userData  = useRef(null);
   const editorRef = useRef(null);
   const socketRef = useRef(null);
-  const monacoRef = useRef(null);
-  var contentWidgets = {}
+  const [contentWidgets, setContentWidgets] = useState({});
 //   var decorations = {}
   var users = {}
 
@@ -24,7 +23,8 @@ const Chat = ()=>{
   const [loading, setLoading] = useState(false);
 
   const insertWidget = (e) => {
-    contentWidgets[e.socketId] = {
+    setContentWidgets(prevState => {
+      prevState[e.socketId] = {
         domNode: null,
         position: {
             lineNumber: 0,
@@ -43,16 +43,21 @@ const Chat = ()=>{
         getPosition:  function() {
             return {
                 position: this.position,
-                preference: [monacoRef.current.editor.ContentWidgetPositionPreference.ABOVE]
+                preference: [1]
             }
         }
     }
+    return prevState;
+  })
 }
 
 const changeWidgetPosition =(cursor) => {
   editorRef.current.removeContentWidget(contentWidgets[cursor?.socketId])
-  contentWidgets[cursor.socketId].position.lineNumber = cursor?.selection.endLineNumber
-  contentWidgets[cursor.socketId].position.column = cursor?.selection.endColumn
+  setContentWidgets(prevState => {
+    prevState[cursor?.socketId].position.lineNumber = cursor?.selection.endLineNumber
+    prevState[cursor?.socketId].position.column = cursor?.selection.endColumn
+    return prevState;
+  })
   editorRef.current.addContentWidget(contentWidgets[cursor?.socketId])
 }
 
@@ -95,10 +100,9 @@ const changeWidgetPosition =(cursor) => {
   // }
 
 
-  const  onMount = (editor,monaco) => {
+  const  onMount = (editor) => {
     var cursor;
     editorRef.current = editor;
-    monacoRef.current=monaco;
     setLoading(true);
     socketRef.current = io(process.env.REACT_APP_API_URL,{
       query: {'room': room},
@@ -153,6 +157,10 @@ const changeWidgetPosition =(cursor) => {
 
     socketRef.current.on('exit', (data) =>{   
       editorRef.current.removeContentWidget(contentWidgets[data]);
+      setContentWidgets(prevState => {
+        delete prevState[data];
+        return prevState;
+      })
       // editorRef.current.deltaDecorations(decorations[data], []);
       // delete decorations[data]
     })
@@ -171,16 +179,17 @@ const changeWidgetPosition =(cursor) => {
     })
   }; 
 
- 
-  useEffect(() => {
-    window.addEventListener('beforeunload', (event) => {
+  useEffect(()=>{
+    const disconnect = (event) => {
       event.preventDefault();
       socketRef.current.emit("clientLeft", userData.current.socketId,userData.current.room,editorRef.current.getModel().getValue());
       socketRef.current.disconnect();
-    });
-  // eslint-disable-next-line
-  }, [userData.current])
-  
+    }
+    window.addEventListener('beforeunload', disconnect);
+    return () => {
+      window.removeEventListener('beforeunload',disconnect);
+    }
+  },[])
 
   const onChange = (v,e) => {
     if(e.changes[0].forceMoveMarkers === true || e.isFlush) return;
@@ -195,7 +204,7 @@ const changeWidgetPosition =(cursor) => {
        <Editor
           width="100vw"
           defaultLanguage="javascript"
-          theme= 'vs-light'
+          theme= 'vs-dark'
           onMount={onMount}
           onChange={onChange}
           options={{    
