@@ -24,7 +24,7 @@ const Home = ()=>{
     setLoading(true);
     fetchHome()
     .then(res => {
-      if(res?.status){
+      if(res?.status===1){
         res && setUserData(res?.home[0]);
         res && setPopular(res?.home[1]);
         setLoading(false);

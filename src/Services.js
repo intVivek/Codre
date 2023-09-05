@@ -21,9 +21,9 @@ export function logout() {
     return callPost(baseUrl + '/logout', {});
 }
 
-// const callGet = (url) => {
-//     return fetch(url).then(handleres);
-// }
+export  const isAuthenticated = async () => {
+    return await callGet(baseUrl + '/auth', {});
+}
 
 const callPost = (url, body) => {
     return fetch(url, {
@@ -31,6 +31,15 @@ const callPost = (url, body) => {
         body: JSON.stringify(body),
         credentials: 'include',
         headers: { "Content-Type": "application/json" }
+    }).then(handleres);
+}
+
+const callGet = async(url, ...params) => {
+    return await fetch(url, {
+        method: 'GET',
+        credentials: 'include',
+        headers: { "Content-Type": "application/json" },
+        ...params
     }).then(handleres);
 }
 
