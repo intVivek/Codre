@@ -6,6 +6,7 @@ import {createWidget} from '../../Utils/createWidget.js';
 import {useParams,useNavigate} from 'react-router-dom';
 import NavBar from '../../Components/NavBar/NavBar.js';
 import LoadingPage from '../LoadingPage/LoadingPage.js';
+import { toast } from 'react-toastify';
 require('dotenv').config();
 
 
@@ -113,6 +114,11 @@ const changeWidgetPosition =(cursor) => {
       withCredentials: true
     });
 
+    socketRef.current.on('roomAlreadyJoined',()=>{
+      navigate("/home");
+      toast.error("Session already exists, Please Close all other active tabs");
+    });
+
     socketRef.current.on('failed',()=>{
       navigate("/home");
     });
@@ -125,7 +131,7 @@ const changeWidgetPosition =(cursor) => {
 
     socketRef.current.on('connected',  (data) => { 
       socketRef.current.emit('selection', cursor);
-      insertWidget(data);
+        insertWidget(data);
       users[data.socketId] = data.color;
       // const sheet = new CSSStyleSheet();
       // sheet.replaceSync(`.user${data.socketId} {background: 'white'}`);
@@ -134,8 +140,8 @@ const changeWidgetPosition =(cursor) => {
 
     socketRef.current.on('userdata', userData =>{
       for (var i of userData) {
-        users[i.socketId] = i.color
-        insertWidget(i)
+          users[i.socketId] = i.color
+          insertWidget(i)
         // const sheet = new CSSStyleSheet();
         // sheet.replaceSync(`.user${i.socketId} {background: 'white'}`);
         // document.adoptedStyleSheets = [...document.adoptedStyleSheets,sheet];
@@ -181,12 +187,13 @@ const changeWidgetPosition =(cursor) => {
 
   useEffect(()=>{
     const disconnect = (event) => {
-      event.preventDefault();
-      socketRef.current.emit("clientLeft", userData.current.socketId,userData.current.room,editorRef.current.getModel().getValue());
+      event?.preventDefault();
+      socketRef.current.emit("clientLeft", userData?.current?.socketId,userData?.current?.room,editorRef?.current?.getModel()?.getValue());
       socketRef.current.disconnect();
     }
     window.addEventListener('beforeunload', disconnect);
     return () => {
+      disconnect();
       window.removeEventListener('beforeunload',disconnect);
     }
   },[])
