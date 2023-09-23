@@ -7,6 +7,7 @@ import {useParams,useNavigate} from 'react-router-dom';
 import NavBar from '../../Components/NavBar/NavBar.js';
 import LoadingPage from '../LoadingPage/LoadingPage.js';
 import { toast } from 'react-toastify';
+import { isAuthenticated } from '../../Services';
 require('dotenv').config();
 
 
@@ -120,6 +121,7 @@ const changeWidgetPosition =(cursor) => {
     });
 
     socketRef.current.on('failed',()=>{
+      console.log('failed')
       navigate("/home");
     });
 
@@ -185,7 +187,13 @@ const changeWidgetPosition =(cursor) => {
     })
   }; 
 
+
   useEffect(()=>{
+    (async ()=>{
+      const res = await isAuthenticated();
+      if (res.status===0) navigate("/");
+    })()
+    
     const disconnect = (event) => {
       event?.preventDefault();
       socketRef.current.emit("clientLeft", userData?.current?.socketId,userData?.current?.room,editorRef?.current?.getModel()?.getValue());
@@ -196,7 +204,7 @@ const changeWidgetPosition =(cursor) => {
       disconnect();
       window.removeEventListener('beforeunload',disconnect);
     }
-  },[])
+  },[navigate])
 
   const onChange = (v,e) => {
     if(e.changes[0].forceMoveMarkers === true || e.isFlush) return;

@@ -6,6 +6,9 @@
     z-index: 9999;
     background-color: #f56c35;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     >.loadingPage {
         position: absolute;
@@ -296,7 +299,6 @@
         font-weight: 600;
         font-size: 12px;
         text-transform: uppercase;
-        left: 50%;
         top: 58%;
         margin-left: -20px;
     }

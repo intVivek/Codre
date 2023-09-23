@@ -4,20 +4,28 @@ import {useState, useEffect, useRef} from 'react';
 
 const LoadingPage = (props) => {
     const [loading, setLoading] = useState(true);
+    const [text, setText] = useState('Loading')
     const isMounted = useRef(false);
+    const timeoutRef = useRef(false);
 
     useEffect(()=>{
         if (isMounted.current) {
             setTimeout(()=>{
                 setLoading(false);
             },1600);
-            console.log('14');
         }
         else{
             if(props.loading)isMounted.current = true;
-            console.log('18');
         }
     },[props.loading])
+
+    useEffect(()=>{
+        timeoutRef.current = setTimeout(()=>setText('"Server is awakening from slumber; kindly exercise patience.(ETA: 2min)'), 10000);
+
+        return ()=>clearTimeout(timeoutRef.current)
+
+    }, [])
+
     return (
         <>
             { loading && <div className={props.loading?"loadingPageMain":"loadingPageMain mainLoaded"}>
@@ -41,7 +49,7 @@ const LoadingPage = (props) => {
                         <span></span>
                     </div>
                 </div>
-                <h1>Loading</h1>
+                <h1>{text}</h1>
             </div>}
         </>
     )

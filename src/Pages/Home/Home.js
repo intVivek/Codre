@@ -10,6 +10,7 @@ import CreateModal from '../../Components/CreateModal/CreateModal';
 import RoomBox from '../../Components/RoomBox/RoomBox';
 import LoadingPage from '../LoadingPage/LoadingPage';
 import MosaicLoading from '../../Components/MosaicLoading/MosaicLoading.js';
+import {ReactComponent as Loading} from '../../Assets/icons/loading.svg';
 
 const Home = ()=>{
   const [openModal, setOpenModal] = useState(false);
@@ -19,6 +20,7 @@ const Home = ()=>{
   const [roomOpenLoading, setRoomOpenLoading] = useState(false);
   const [joinInput, setJoinInput] = useState("");
   const navigate = useNavigate();
+  const [joinRoomLoading, setJoinRoomLoading] = useState(false)
 
   useEffect(()=>{
     setLoading(true);
@@ -55,17 +57,19 @@ const Home = ()=>{
 
   const joinRoomHandler=()=>{                       
     let room = joinInput;
+    setJoinRoomLoading(true)
     room = room.split('/').pop();
     room = room.replaceAll(' ','');
     if(!room) return toast.error("Please Enter Room");
     checkRoom({room})
     .then(res=>{
-      if(res?.status){
-        navigate(`/chat/${room}`);
+      if(res?.status===1){
+        navigate(`/room/${room}`);
       }
       else{
         toast.error(res.message);
       }
+      setJoinRoomLoading(false)
     })
   }
 
@@ -79,7 +83,7 @@ const Home = ()=>{
         <div className='createRoom'>
           <div className='createBtn' onClick={()=>setOpenModal(true)}><p>Create</p> <Close className={openModal?'addIcon addIconSpin':'addIcon'}/></div>
           <div className='joinInput gradiantAnimation'><input className='inputField' placeholder='Enter a code or link' value={joinInput} onChange={e=>setJoinInput(e.target.value)}/></div>
-          <div className='joinBtn' onClick={joinRoomHandler}>Join</div>
+          <div className='joinBtn' onClick={joinRoomHandler}>{joinRoomLoading?<Loading/>:'Join'}</div>
         </div>
         <div className='ownRoom'>
         {popular?.length>0 && <><div  className='ownRoomTitle'>
