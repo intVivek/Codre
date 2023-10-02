@@ -20,7 +20,7 @@ const LoadingPage = (props) => {
     },[props.loading])
 
     useEffect(()=>{
-        timeoutRef.current = setTimeout(()=>setText('"Server is awakening from slumber; kindly exercise patience.(ETA: 2min)'), 10000);
+        timeoutRef.current = setTimeout(()=>setText('"Server is awakening from slumber; kindly exercise patience.(ETA: 30sec)'), 10000);
 
         return ()=>clearTimeout(timeoutRef.current)
 
