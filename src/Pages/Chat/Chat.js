@@ -25,8 +25,9 @@ const Chat = ()=>{
   const [loading, setLoading] = useState(false);
 
   const insertWidget = (e) => {
+    if(e._id === userData.current._id) return;
     setContentWidgets(prevState => {
-      prevState[e.socketId] = {
+      prevState[e._id] = {
         domNode: null,
         position: {
             lineNumber: 0,
@@ -34,7 +35,7 @@ const Chat = ()=>{
         },
         allowEditorOverflow: true,
         getId: () => {
-            return 'content.' + e.socketId
+            return 'content.' + e._id
         },
         getDomNode: function () {
             if (!this.domNode) {
@@ -54,13 +55,13 @@ const Chat = ()=>{
 }
 
 const changeWidgetPosition =(cursor) => {
-  editorRef.current.removeContentWidget(contentWidgets[cursor?.socketId])
+  editorRef.current.removeContentWidget(contentWidgets[cursor?._id])
   setContentWidgets(prevState => {
-    prevState[cursor?.socketId].position.lineNumber = cursor?.selection.endLineNumber
-    prevState[cursor?.socketId].position.column = cursor?.selection.endColumn
+    prevState[cursor?._id].position.lineNumber = cursor?.selection.endLineNumber
+    prevState[cursor?._id].position.column = cursor?.selection.endColumn
     return prevState;
   })
-  editorRef.current.addContentWidget(contentWidgets[cursor?.socketId])
+  editorRef.current.addContentWidget(contentWidgets[cursor?._id])
 }
 
   // const changeSeleciton = (e) => {
@@ -115,7 +116,8 @@ const changeWidgetPosition =(cursor) => {
       withCredentials: true
     });
 
-    socketRef.current.on('roomAlreadyJoined',()=>{
+    socketRef.current.on('roomAlreadyJoined',(rooms)=>{
+      console.log(rooms);
       navigate("/home");
       toast.error("Session already exists, Please Close all other active tabs");
     });
@@ -126,6 +128,7 @@ const changeWidgetPosition =(cursor) => {
     });
 
     socketRef.current.on('personalData',  (data) => { 
+      console.log(data)
       userData.current = data;
       setLoading(false);
       setUser(data);
@@ -134,32 +137,27 @@ const changeWidgetPosition =(cursor) => {
     socketRef.current.on('connected',  (data) => { 
       socketRef.current.emit('selection', cursor);
         insertWidget(data);
-      users[data.socketId] = data.color;
-      // const sheet = new CSSStyleSheet();
-      // sheet.replaceSync(`.user${data.socketId} {background: 'white'}`);
-      // document.adoptedStyleSheets = [sheet];
+      users[data._id] = data.color;
     })
 
     socketRef.current.on('userdata', userData =>{
+      console.log(userData)
       for (var i of userData) {
-          users[i.socketId] = i.color
+          users[i._id] = i.color
           insertWidget(i)
-        // const sheet = new CSSStyleSheet();
-        // sheet.replaceSync(`.user${i.socketId} {background: 'white'}`);
-        // document.adoptedStyleSheets = [...document.adoptedStyleSheets,sheet];
       }
     });
 
-    socketRef.current.on('loadDoc', modelValue =>{
-      modelValue && editor && editor?.getModel()?.setValue(modelValue?.data);
+    socketRef.current.on('loadDoc', data =>{
+      console.log(data)
+      data && editor && editor?.getModel()?.setValue(data);
     });
 
-    socketRef.current.on('clientRequestedData',(id)=>{
-      socketRef.current.emit('clientRequestedData',{id,'data':editor?.getModel()?.getValue()});
+    socketRef.current.on('clientRequestedData',(socketId)=>{
+      socketRef.current.emit('clientRequestedData',{socketId,data: editor?.getModel()?.getValue()});
     })
 
     socketRef.current.on('selection', (data) =>{  
-      // changeSeleciton(data);
       changeWidgetPosition(data);
     })
 
@@ -181,12 +179,21 @@ const changeWidgetPosition =(cursor) => {
       }]);
     })
 
+    socketRef.current.on("disconnect", (reason) => {
+      // if (reason === "io server disconnect") {
+      //   socketRef.current.connect();
+      // }
+    });
+
     editor.onDidChangeCursorSelection( e => {
       cursor = e;
       socketRef.current.emit('selection', e);
     })
   }; 
 
+  useEffect(()=>{
+    console.log('id :', userData?.current?._id)
+  }, [userData?.current?._id])
 
   useEffect(()=>{
     (async ()=>{
@@ -195,9 +202,8 @@ const changeWidgetPosition =(cursor) => {
     })()
     
     const disconnect = (event) => {
-      event?.preventDefault();
-      socketRef.current.emit("clientLeft", userData?.current?.socketId,userData?.current?.room,editorRef?.current?.getModel()?.getValue());
-      socketRef.current.disconnect();
+      socketRef.current?.emit("saveChangesOnClientLeft", editorRef?.current?.getModel()?.getValue());
+      socketRef.current?.disconnect();
     }
     window.addEventListener('beforeunload', disconnect);
     return () => {
