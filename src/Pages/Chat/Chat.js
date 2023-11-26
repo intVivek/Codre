@@ -98,19 +98,19 @@ const Chat = () => {
       users[data._id] = data.color;
     });
 
-    socketRef.current.on("userdata", (userData) => {
-      for (var i of userData) {
+    socketRef.current.on("usersList", (usersList) => {
+      for (var i of usersList) {
         users[i._id] = i.color;
         insertWidget(i);
       }
     });
 
-    socketRef.current.on("loadDoc", (data) => {
+    socketRef.current.on("loadDocument", (data) => {
       data && editor && editor?.getModel()?.setValue(data);
     });
 
-    socketRef.current.on("clientRequestedData", (socketId) => {
-      socketRef.current.emit("clientRequestedData", {
+    socketRef.current.on("requestDataFromRandomUser", (socketId) => {
+      socketRef.current.emit("dataRequestFromForeignClient", {
         socketId,
         data: editor?.getModel()?.getValue(),
       });
