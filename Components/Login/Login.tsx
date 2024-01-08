@@ -2,7 +2,7 @@
 
 import screenshot from "@/Assets/images/Screenshot.png";
 import background from "@/Assets/images/PolygonLuminary.svg";
-import MultiCursor from "../../../codre-old/src/Components/MultiCursor/MultiCursor";
+import MultiCursor from "@/Components/MultiCursor/MultiCursor";
 import { useEffect, useState } from "react";
 import { isAuthenticated } from "../../Services";
 import LoadingPage from "../LoadingPage/LoadingPage";
